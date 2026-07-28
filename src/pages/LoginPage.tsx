@@ -151,7 +151,7 @@ export function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  autoComplete="email"
+                  autoComplete="off"
                   placeholder="admin@nupunhealth.com"
                   className="pl-9"
                   {...register("email", { required: "Email is required" })}
@@ -171,7 +171,7 @@ export function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
+                  autoComplete="off"
                   placeholder="••••••••"
                   className="pl-9 pr-9"
                   {...register("password", { required: "Password is required" })}
