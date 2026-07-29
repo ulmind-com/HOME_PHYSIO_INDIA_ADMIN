@@ -58,6 +58,7 @@ export const videosConfig: ResourceConfig<Video> = {
       section: "Details",
     },
     { name: "youtube_url", label: "YouTube URL", type: "text", placeholder: "https://youtube.com/watch?v=…", section: "Details", colSpan: 2 },
+    { name: "video_file", label: "Video File", type: "video", folder: "nupun/videos", section: "Media", helper: "Upload a video when Source is Cloudinary" },
     { name: "thumbnail", label: "Thumbnail", type: "image", folder: "nupun/videos", section: "Media" },
     { name: "is_featured", label: "Featured", type: "switch", section: "Visibility" },
     { name: "is_active", label: "Active", type: "switch", defaultValue: true, section: "Visibility" },

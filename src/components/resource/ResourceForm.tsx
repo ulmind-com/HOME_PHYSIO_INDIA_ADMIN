@@ -13,11 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ImageUpload } from "@/components/common/ImageUpload";
+import { VideoUpload } from "@/components/common/VideoUpload";
 import { TagsInput } from "@/components/common/TagsInput";
 import { cn } from "@/lib/utils";
 import type { FieldConfig, ImageAsset } from "./form-helpers";
 import { buildDefaults, groupSections } from "./form-helpers";
-import type { ImageAsset as ImageAssetModel } from "@/types/models";
+import type { FileAsset, ImageAsset as ImageAssetModel } from "@/types/models";
 
 interface ResourceFormProps<T> {
   fields: FieldConfig[];
@@ -71,7 +72,7 @@ export function ResourceForm<T>({
                     key={field.name}
                     className={cn(
                       "space-y-1.5",
-                      field.colSpan === 2 || field.type === "image"
+                      field.colSpan === 2 || field.type === "image" || field.type === "video"
                         ? "sm:col-span-2"
                         : field.type === "textarea" ||
                             field.type === "richtext" ||
@@ -188,6 +189,21 @@ function renderControl(
             <ImageUpload
               value={f.value as ImageAssetModel | null}
               onChange={(asset: ImageAsset | null) => f.onChange(asset)}
+              folder={field.folder}
+            />
+          )}
+        />
+      );
+
+    case "video":
+      return (
+        <Controller
+          control={control}
+          name={field.name}
+          render={({ field: f }) => (
+            <VideoUpload
+              value={f.value as FileAsset | null}
+              onChange={(asset: FileAsset | null) => f.onChange(asset)}
               folder={field.folder}
             />
           )}

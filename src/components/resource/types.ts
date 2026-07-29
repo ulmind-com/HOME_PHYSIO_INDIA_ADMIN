@@ -10,6 +10,7 @@ export type FieldType =
   | "select"
   | "switch"
   | "image"
+  | "video"
   | "tags"
   | "date";
 

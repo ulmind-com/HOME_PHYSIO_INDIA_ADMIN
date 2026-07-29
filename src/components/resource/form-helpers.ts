@@ -38,6 +38,7 @@ function fallbackForType(field: FieldConfig): unknown {
     case "number":
       return undefined;
     case "image":
+    case "video":
       return null;
     default:
       return "";
