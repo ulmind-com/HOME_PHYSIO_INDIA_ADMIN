@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
 import {
   Settings as SettingsIcon,
@@ -13,9 +13,12 @@ import {
   Youtube,
   Twitter,
   MessageCircle,
+  LayoutTemplate,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { SocialLinks, WebsiteSettings } from "@/types/models";
+import type { ServicesHero, SocialLinks, WebsiteSettings } from "@/types/models";
 import { settingsService } from "@/services/settings.service";
 import { normalizeError } from "@/services/api/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,6 +53,9 @@ export function SettingsPage() {
           <TabsTrigger value="website">
             <Globe className="h-4 w-4" /> Website
           </TabsTrigger>
+          <TabsTrigger value="services-hero">
+            <LayoutTemplate className="h-4 w-4" /> Services Hero
+          </TabsTrigger>
           <TabsTrigger value="social">
             <Share2 className="h-4 w-4" /> Social Links
           </TabsTrigger>
@@ -57,6 +63,9 @@ export function SettingsPage() {
 
         <TabsContent value="website">
           <WebsiteForm canEdit={canEdit} />
+        </TabsContent>
+        <TabsContent value="services-hero">
+          <ServicesHeroForm canEdit={canEdit} />
         </TabsContent>
         <TabsContent value="social">
           <SocialForm canEdit={canEdit} />
@@ -155,6 +164,135 @@ function WebsiteForm({ canEdit }: { canEdit: boolean }) {
                 )}
               />
             </Field>
+          </div>
+        </CardContent>
+        {canEdit && (
+          <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
+            <Button type="submit" loading={mutation.isPending}>
+              <Save /> Save changes
+            </Button>
+          </div>
+        )}
+      </Card>
+    </form>
+  );
+}
+
+type HeroFormValues = { services_hero: ServicesHero };
+
+function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "website"],
+    queryFn: () => settingsService.getWebsite(),
+  });
+
+  const { register, handleSubmit, reset, control } = useForm<HeroFormValues>({
+    defaultValues: { services_hero: { title: "", subtitle: "", background_image: null, stats: [] } },
+  });
+  const { fields, append, remove } = useFieldArray({ control, name: "services_hero.stats" });
+
+  useEffect(() => {
+    if (data) {
+      reset({
+        services_hero: {
+          title: data.services_hero?.title ?? "",
+          subtitle: data.services_hero?.subtitle ?? "",
+          background_image: data.services_hero?.background_image ?? null,
+          stats: data.services_hero?.stats ?? [],
+        },
+      });
+    }
+  }, [data, reset]);
+
+  const mutation = useMutation({
+    mutationFn: (values: Partial<WebsiteSettings>) => settingsService.updateWebsite(values),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["settings", "website"] });
+      toast.success("Services hero saved");
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  if (isLoading) return <Skeleton className="h-[420px] rounded-xl" />;
+
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate({ services_hero: v.services_hero }))}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Services page hero</CardTitle>
+          <CardDescription>
+            Headline, background image and highlight stats shown at the top of the Services page. Call / WhatsApp
+            buttons use the phone &amp; WhatsApp numbers from the Website tab.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Field label="Heading">
+            <Input
+              placeholder="Trusted Home Healthcare Services in Gurgaon & Delhi NCR"
+              {...register("services_hero.title")}
+              disabled={!canEdit}
+            />
+          </Field>
+          <Field label="Subtitle">
+            <Textarea
+              rows={3}
+              placeholder="Compassionate and reliable home healthcare for seniors, patients and recovering individuals…"
+              {...register("services_hero.subtitle")}
+              disabled={!canEdit}
+            />
+          </Field>
+          <Field label="Background image">
+            <Controller
+              control={control}
+              name="services_hero.background_image"
+              render={({ field }) => (
+                <ImageUpload
+                  value={field.value ?? undefined}
+                  onChange={field.onChange}
+                  folder="nupun/hero"
+                  aspect="wide"
+                />
+              )}
+            />
+          </Field>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Highlight stats</Label>
+              {canEdit && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ value: "", label: "" })}
+                >
+                  <Plus className="h-4 w-4" /> Add stat
+                </Button>
+              )}
+            </div>
+            {fields.length === 0 && (
+              <p className="text-sm text-muted-foreground">No stats yet. Add up to four (e.g. “24/7” → “Patient Support”).</p>
+            )}
+            <div className="space-y-3">
+              {fields.map((f, i) => (
+                <div key={f.id} className="flex items-end gap-3">
+                  <div className="w-32 space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Value</Label>
+                    <Input placeholder="24/7" {...register(`services_hero.stats.${i}.value` as const)} disabled={!canEdit} />
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Label</Label>
+                    <Input placeholder="Patient Support" {...register(`services_hero.stats.${i}.label` as const)} disabled={!canEdit} />
+                  </div>
+                  {canEdit && (
+                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </CardContent>
         {canEdit && (

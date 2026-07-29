@@ -268,6 +268,18 @@ export interface WorkingHour {
   is_closed: boolean;
 }
 
+export interface HeroStat {
+  value: string;
+  label: string;
+}
+
+export interface ServicesHero {
+  title?: string | null;
+  subtitle?: string | null;
+  background_image?: ImageAsset | null;
+  stats?: HeroStat[];
+}
+
 export interface WebsiteSettings extends BaseDoc {
   website_name: string;
   tagline?: string | null;
@@ -280,6 +292,7 @@ export interface WebsiteSettings extends BaseDoc {
   google_map_embed?: string | null;
   google_reviews_link?: string | null;
   working_hours: WorkingHour[];
+  services_hero?: ServicesHero | null;
 }
 
 export interface SocialLinks extends BaseDoc {
