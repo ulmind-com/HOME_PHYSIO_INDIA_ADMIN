@@ -335,10 +335,11 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
   });
 
   const { register, handleSubmit, reset, control } = useForm<HomeHeroFormValues>({
-    defaultValues: { home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [] } },
+    defaultValues: { home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [], stats: [] } },
   });
   const avatarsField = useFieldArray({ control, name: "home_hero.trust_badge_avatars" });
   const sliderField = useFieldArray({ control, name: "home_hero.slider_images" });
+  const statsField = useFieldArray({ control, name: "home_hero.stats" });
 
   useEffect(() => {
     if (data) {
@@ -348,6 +349,7 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
           trust_badge_quote: data.home_hero?.trust_badge_quote ?? "",
           trust_badge_avatars: data.home_hero?.trust_badge_avatars ?? [],
           slider_images: data.home_hero?.slider_images ?? [],
+          stats: data.home_hero?.stats ?? [],
         },
       });
     }
@@ -415,6 +417,48 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
                       onClick={() => sliderField.remove(i)}
                     >
                       <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-6 border-t">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg">Highlight Stats</h3>
+              {canEdit && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => statsField.append({ value: 0, suffix: "+", label: "" })}
+                >
+                  <Plus className="h-4 w-4" /> Add Stat
+                </Button>
+              )}
+            </div>
+            {statsField.fields.length === 0 && (
+              <p className="text-sm text-muted-foreground mb-4">No stats added yet. Add up to 3 stats (e.g. 100+ Verified Caregivers).</p>
+            )}
+            <div className="space-y-4">
+              {statsField.fields.map((f, i) => (
+                <div key={f.id} className="flex flex-wrap items-end gap-3 p-4 border rounded-lg bg-muted/10 relative group">
+                  <div className="w-24 space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Value (Number)</Label>
+                    <Input type="number" placeholder="100" {...register(`home_hero.stats.${i}.value` as const, { valueAsNumber: true })} disabled={!canEdit} />
+                  </div>
+                  <div className="w-24 space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">Suffix</Label>
+                    <Input placeholder="+" {...register(`home_hero.stats.${i}.suffix` as const)} disabled={!canEdit} />
+                  </div>
+                  <div className="flex-1 space-y-1.5 min-w-[200px]">
+                    <Label className="text-xs text-muted-foreground">Label</Label>
+                    <Input placeholder="Verified Caregivers" {...register(`home_hero.stats.${i}.label` as const)} disabled={!canEdit} />
+                  </div>
+                  {canEdit && (
+                    <Button type="button" variant="ghost" size="icon" className="text-destructive absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => statsField.remove(i)}>
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
