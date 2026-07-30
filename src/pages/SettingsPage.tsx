@@ -56,6 +56,9 @@ export function SettingsPage() {
           <TabsTrigger value="services-hero">
             <LayoutTemplate className="h-4 w-4" /> Services Hero
           </TabsTrigger>
+          <TabsTrigger value="home-hero">
+            <LayoutTemplate className="h-4 w-4" /> Home Hero
+          </TabsTrigger>
           <TabsTrigger value="social">
             <Share2 className="h-4 w-4" /> Social Links
           </TabsTrigger>
@@ -66,6 +69,9 @@ export function SettingsPage() {
         </TabsContent>
         <TabsContent value="services-hero">
           <ServicesHeroForm canEdit={canEdit} />
+        </TabsContent>
+        <TabsContent value="home-hero">
+          <HomeHeroForm canEdit={canEdit} />
         </TabsContent>
         <TabsContent value="social">
           <SocialForm canEdit={canEdit} />
@@ -304,6 +310,181 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        </CardContent>
+        {canEdit && (
+          <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
+            <Button type="submit" loading={mutation.isPending}>
+              <Save /> Save changes
+            </Button>
+          </div>
+        )}
+      </Card>
+    </form>
+  );
+}
+
+type HomeHeroFormValues = { home_hero: WebsiteSettings["home_hero"] };
+
+function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "website"],
+    queryFn: () => settingsService.getWebsite(),
+  });
+
+  const { register, handleSubmit, reset, control } = useForm<HomeHeroFormValues>({
+    defaultValues: { home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [] } },
+  });
+  const avatarsField = useFieldArray({ control, name: "home_hero.trust_badge_avatars" });
+  const sliderField = useFieldArray({ control, name: "home_hero.slider_images" });
+
+  useEffect(() => {
+    if (data) {
+      reset({
+        home_hero: {
+          trust_badge_text: data.home_hero?.trust_badge_text ?? "",
+          trust_badge_quote: data.home_hero?.trust_badge_quote ?? "",
+          trust_badge_avatars: data.home_hero?.trust_badge_avatars ?? [],
+          slider_images: data.home_hero?.slider_images ?? [],
+        },
+      });
+    }
+  }, [data, reset]);
+
+  const mutation = useMutation({
+    mutationFn: (values: Partial<WebsiteSettings>) => settingsService.updateWebsite(values),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["settings", "website"] });
+      toast.success("Home hero saved");
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  if (isLoading) return <Skeleton className="h-[420px] rounded-xl" />;
+
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate({ home_hero: v.home_hero }))}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Home page hero</CardTitle>
+          <CardDescription>
+            Manage the background slider images and the floating Trust Badge details.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Slider Images</Label>
+              {canEdit && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => sliderField.append({ url: "" })}
+                >
+                  <Plus className="h-4 w-4" /> Add Image
+                </Button>
+              )}
+            </div>
+            {sliderField.fields.length === 0 && (
+              <p className="text-sm text-muted-foreground">No slider images uploaded. Default premium images will be used.</p>
+            )}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {sliderField.fields.map((f, i) => (
+                <div key={f.id} className="relative group">
+                  <Controller
+                    control={control}
+                    name={`home_hero.slider_images.${i}`}
+                    render={({ field }) => (
+                      <ImageUpload
+                        value={field.value ?? undefined}
+                        onChange={field.onChange}
+                        folder="nupun/hero"
+                        aspect="wide"
+                      />
+                    )}
+                  />
+                  {canEdit && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 w-7 h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => sliderField.remove(i)}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-6 border-t">
+            <h3 className="font-semibold text-lg mb-4">Trust Badge</h3>
+            <div className="space-y-6">
+              <Field label="Trust Badge Text">
+                <Input
+                  placeholder="Trusted by 5,000+"
+                  {...register("home_hero.trust_badge_text")}
+                  disabled={!canEdit}
+                />
+              </Field>
+              <Field label="Trust Badge Quote">
+                <Textarea
+                  rows={2}
+                  placeholder='"Their nursing staff is extremely professional..."'
+                  {...register("home_hero.trust_badge_quote")}
+                  disabled={!canEdit}
+                />
+              </Field>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Avatars (Small overlapping circles)</Label>
+                  {canEdit && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => avatarsField.append({ url: "" })}
+                    >
+                      <Plus className="h-4 w-4" /> Add Avatar
+                    </Button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  {avatarsField.fields.map((f, i) => (
+                    <div key={f.id} className="relative group w-20 h-20">
+                      <Controller
+                        control={control}
+                        name={`home_hero.trust_badge_avatars.${i}`}
+                        render={({ field }) => (
+                          <ImageUpload
+                            value={field.value ?? undefined}
+                            onChange={field.onChange}
+                            folder="nupun/hero"
+                            aspect="square"
+                          />
+                        )}
+                      />
+                      {canEdit && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => avatarsField.remove(i)}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>

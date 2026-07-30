@@ -280,6 +280,13 @@ export interface ServicesHero {
   stats?: HeroStat[];
 }
 
+export interface HomeHero {
+  trust_badge_text?: string | null;
+  trust_badge_quote?: string | null;
+  trust_badge_avatars?: ImageAsset[];
+  slider_images?: ImageAsset[];
+}
+
 export interface WebsiteSettings extends BaseDoc {
   website_name: string;
   tagline?: string | null;
@@ -295,6 +302,7 @@ export interface WebsiteSettings extends BaseDoc {
   google_reviews_link?: string | null;
   working_hours: WorkingHour[];
   services_hero?: ServicesHero | null;
+  home_hero?: HomeHero | null;
 }
 
 export interface SocialLinks extends BaseDoc {
