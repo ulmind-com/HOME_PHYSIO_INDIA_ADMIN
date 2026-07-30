@@ -285,6 +285,8 @@ export interface WebsiteSettings extends BaseDoc {
   tagline?: string | null;
   logo?: ImageAsset | null;
   favicon?: ImageAsset | null;
+  theme_primary?: string | null;
+  theme_accent?: string | null;
   email?: string | null;
   phone?: string | null;
   whatsapp?: string | null;

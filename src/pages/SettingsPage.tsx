@@ -114,6 +114,18 @@ function WebsiteForm({ canEdit }: { canEdit: boolean }) {
             <Field label="Tagline">
               <Input {...register("tagline")} disabled={!canEdit} />
             </Field>
+            <Field label="Theme primary color">
+              <div className="flex gap-2">
+                <Input type="color" {...register("theme_primary")} disabled={!canEdit} className="w-12 p-1 h-10" />
+                <Input type="text" {...register("theme_primary")} disabled={!canEdit} placeholder="#0f172a" />
+              </div>
+            </Field>
+            <Field label="Theme accent color">
+              <div className="flex gap-2">
+                <Input type="color" {...register("theme_accent")} disabled={!canEdit} className="w-12 p-1 h-10" />
+                <Input type="text" {...register("theme_accent")} disabled={!canEdit} placeholder="#3b82f6" />
+              </div>
+            </Field>
             <Field label="Email">
               <Input type="email" {...register("email")} disabled={!canEdit} />
             </Field>
