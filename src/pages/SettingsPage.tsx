@@ -16,6 +16,9 @@ import {
   LayoutTemplate,
   Plus,
   Trash2,
+  Info,
+  Layers,
+  Scale,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { ServicesHero, SocialLinks, WebsiteSettings } from "@/types/models";
@@ -62,6 +65,15 @@ export function SettingsPage() {
           <TabsTrigger value="social">
             <Share2 className="h-4 w-4" /> Social Links
           </TabsTrigger>
+          <TabsTrigger value="about">
+            <Info className="h-4 w-4" /> About Page
+          </TabsTrigger>
+          <TabsTrigger value="content">
+            <Layers className="h-4 w-4" /> Content Sections
+          </TabsTrigger>
+          <TabsTrigger value="legal">
+            <Scale className="h-4 w-4" /> Legal & Footer
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="website">
@@ -75,6 +87,15 @@ export function SettingsPage() {
         </TabsContent>
         <TabsContent value="social">
           <SocialForm canEdit={canEdit} />
+        </TabsContent>
+        <TabsContent value="about">
+          <AboutForm canEdit={canEdit} />
+        </TabsContent>
+        <TabsContent value="content">
+          <ContentSectionsForm canEdit={canEdit} />
+        </TabsContent>
+        <TabsContent value="legal">
+          <LegalAndFooterForm canEdit={canEdit} />
         </TabsContent>
       </Tabs>
     </div>
@@ -614,5 +635,232 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <Label>{label}</Label>
       {children}
     </div>
+  );
+}
+
+function AboutForm({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "website"],
+    queryFn: () => settingsService.getWebsite(),
+  });
+
+  const { register, handleSubmit, reset, control } = useForm<WebsiteSettings>();
+  const statsField = useFieldArray({ control, name: "about_stats" });
+
+  useEffect(() => {
+    if (data) reset(data);
+  }, [data, reset]);
+
+  const mutation = useMutation({
+    mutationFn: (values: Partial<WebsiteSettings>) => settingsService.updateWebsite(values),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["settings", "website"] });
+      toast.success("About page settings saved");
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  if (isLoading) return <Skeleton className="h-[400px] rounded-xl" />;
+
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+      <Card>
+        <CardHeader>
+          <CardTitle>About Page Settings</CardTitle>
+          <CardDescription>Manage hero, story, and stats on the About Us page.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Field label="Hero Badge (e.g. ABOUT NUPUN)">
+            <Input {...register("about_hero_badge")} disabled={!canEdit} />
+          </Field>
+          <Field label="Hero Title">
+            <Input {...register("about_hero_title")} disabled={!canEdit} />
+          </Field>
+          <Field label="Hero Description">
+            <Textarea {...register("about_hero_description")} rows={3} disabled={!canEdit} />
+          </Field>
+          <Field label="Hero Image">
+            <Controller
+              control={control}
+              name="about_hero_image"
+              render={({ field }) => (
+                <ImageUpload value={field.value ?? undefined} onChange={field.onChange} folder="nupun/about" aspect="wide" />
+              )}
+            />
+          </Field>
+          
+          <div className="pt-6 border-t">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg">Hero Stats (The floating band)</h3>
+              {canEdit && (
+                <Button type="button" variant="outline" size="sm" onClick={() => statsField.append({ value: "", label: "" })}>
+                  <Plus className="h-4 w-4" /> Add Stat
+                </Button>
+              )}
+            </div>
+            <div className="space-y-4">
+              {statsField.fields.map((f, i) => (
+                <div key={f.id} className="flex gap-3 items-end">
+                  <div className="w-1/3 space-y-1.5">
+                    <Label className="text-xs">Value (e.g. 35+)</Label>
+                    <Input {...register(`about_stats.${i}.value` as const)} disabled={!canEdit} />
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    <Label className="text-xs">Label (e.g. Years of Trust)</Label>
+                    <Input {...register(`about_stats.${i}.label` as const)} disabled={!canEdit} />
+                  </div>
+                  {canEdit && (
+                    <Button type="button" variant="ghost" size="icon" onClick={() => statsField.remove(i)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+        {canEdit && (
+          <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
+            <Button type="submit" loading={mutation.isPending}>
+              <Save /> Save changes
+            </Button>
+          </div>
+        )}
+      </Card>
+    </form>
+  );
+}
+
+function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "website"],
+    queryFn: () => settingsService.getWebsite(),
+  });
+
+  const { register, handleSubmit, reset, control } = useForm<WebsiteSettings>();
+  const whyChooseField = useFieldArray({ control, name: "why_choose_items" });
+  const conditionsField = useFieldArray({ control, name: "conditions_list" as never }); // Hack for string array
+
+  useEffect(() => {
+    if (data) reset(data);
+  }, [data, reset]);
+
+  const mutation = useMutation({
+    mutationFn: (values: Partial<WebsiteSettings>) => settingsService.updateWebsite(values),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["settings", "website"] });
+      toast.success("Content sections saved");
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  if (isLoading) return <Skeleton className="h-[400px] rounded-xl" />;
+
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Content Sections</CardTitle>
+          <CardDescription>Manage shared sections like 'Why Choose Us' and 'Conditions We Support'.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Why Choose Nupun (Services Page)</Label>
+              {canEdit && (
+                <Button type="button" variant="outline" size="sm" onClick={() => whyChooseField.append({ title: "", detail: "" })}>
+                  <Plus className="h-4 w-4" /> Add Reason
+                </Button>
+              )}
+            </div>
+            <div className="space-y-4">
+              {whyChooseField.fields.map((f, i) => (
+                <div key={f.id} className="flex gap-3 items-end p-3 border rounded-lg bg-muted/10">
+                  <div className="w-1/3 space-y-1.5">
+                    <Label className="text-xs">Title</Label>
+                    <Input {...register(`why_choose_items.${i}.title` as const)} disabled={!canEdit} />
+                  </div>
+                  <div className="flex-1 space-y-1.5">
+                    <Label className="text-xs">Detail / Description</Label>
+                    <Input {...register(`why_choose_items.${i}.detail` as const)} disabled={!canEdit} />
+                  </div>
+                  {canEdit && (
+                    <Button type="button" variant="ghost" size="icon" onClick={() => whyChooseField.remove(i)}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+        {canEdit && (
+          <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
+            <Button type="submit" loading={mutation.isPending}>
+              <Save /> Save changes
+            </Button>
+          </div>
+        )}
+      </Card>
+    </form>
+  );
+}
+
+function LegalAndFooterForm({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "website"],
+    queryFn: () => settingsService.getWebsite(),
+  });
+
+  const { register, handleSubmit, reset } = useForm<WebsiteSettings>();
+
+  useEffect(() => {
+    if (data) reset(data);
+  }, [data, reset]);
+
+  const mutation = useMutation({
+    mutationFn: (values: Partial<WebsiteSettings>) => settingsService.updateWebsite(values),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["settings", "website"] });
+      toast.success("Settings saved");
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  if (isLoading) return <Skeleton className="h-[400px] rounded-xl" />;
+
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Footer & CTA</CardTitle>
+          <CardDescription>Manage footer text and call to action content.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Field label="Footer Tagline">
+            <Input {...register("footer_tagline")} disabled={!canEdit} />
+          </Field>
+          <Field label="Footer Description">
+            <Textarea {...register("footer_description")} rows={3} disabled={!canEdit} />
+          </Field>
+          <Field label="CTA Title">
+            <Input {...register("cta_title")} disabled={!canEdit} />
+          </Field>
+          <Field label="CTA Description">
+            <Textarea {...register("cta_description")} rows={2} disabled={!canEdit} />
+          </Field>
+        </CardContent>
+        {canEdit && (
+          <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
+            <Button type="submit" loading={mutation.isPending}>
+              <Save /> Save changes
+            </Button>
+          </div>
+        )}
+      </Card>
+    </form>
   );
 }
