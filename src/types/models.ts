@@ -294,6 +294,43 @@ export interface HomeHero {
   stats?: HomeHeroStat[];
 }
 
+export interface ValueItem {
+  title: string;
+  body: string;
+}
+
+export interface TeamTile {
+  image?: string | null;
+  count: string;
+  title: string;
+  desc: string;
+}
+
+export interface CareTeamSlideStat {
+  value: string;
+  label: string;
+}
+
+export interface CareTeamSlide {
+  image?: string | null;
+  eyebrow: string;
+  title: string;
+  description: string;
+  button_text: string;
+  button_link: string;
+  stats: CareTeamSlideStat[];
+}
+
+export interface WhyChooseItem {
+  title: string;
+  detail: string;
+}
+
+export interface LegalSection {
+  title: string;
+  body: string;
+}
+
 export interface WebsiteSettings extends BaseDoc {
   website_name: string;
   tagline?: string | null;
@@ -310,6 +347,50 @@ export interface WebsiteSettings extends BaseDoc {
   working_hours: WorkingHour[];
   services_hero?: ServicesHero | null;
   home_hero?: HomeHero | null;
+
+  // Home page hero
+  hero_headline?: string | null;
+  hero_subtitle?: string | null;
+  hero_description?: string | null;
+  hero_image?: ImageAsset | null;
+  hero_stats?: HeroStat[];
+
+  // About page
+  about_hero_badge?: string | null;
+  about_hero_title?: string | null;
+  about_hero_description?: string | null;
+  about_hero_image?: ImageAsset | null;
+  about_hero_stats?: HeroStat[];
+  about_story_title?: string | null;
+  about_story_text?: string | null;
+  about_stats?: HeroStat[];
+  about_values?: ValueItem[];
+  about_commitments?: string[];
+  about_welcome_title?: string | null;
+  about_welcome_description?: string | null;
+  about_welcome_image?: ImageAsset | null;
+
+  // Content sections
+  how_it_works_steps?: ValueItem[];
+  team_tiles?: TeamTile[];
+  care_team_slides?: CareTeamSlide[];
+  trust_bar_items?: string[];
+  why_choose_items?: WhyChooseItem[];
+  conditions_list?: string[];
+
+  // Footer
+  footer_tagline?: string | null;
+  footer_description?: string | null;
+  footer_image?: string | null;
+
+  // CTA
+  cta_title?: string | null;
+  cta_description?: string | null;
+
+  // Legal pages
+  privacy_sections?: LegalSection[];
+  terms_sections?: LegalSection[];
+  refund_sections?: LegalSection[];
 }
 
 export interface SocialLinks extends BaseDoc {
