@@ -4,6 +4,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { LoginPage } from "@/pages/LoginPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import {
+  CategoriesPage,
   ServicesPage,
   EquipmentPage,
   BlogsPage,
@@ -34,6 +35,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<DashboardPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/equipment" element={<EquipmentPage />} />

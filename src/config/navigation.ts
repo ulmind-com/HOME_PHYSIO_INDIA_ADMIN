@@ -19,6 +19,7 @@ import {
   Bell,
   ScrollText,
   UserCircle,
+  FolderTree,
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,6 +55,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: "Catalogue",
     items: [
+      { label: "Categories", to: "/categories", icon: FolderTree, permission: "categories:view" },
       { label: "Services", to: "/services", icon: Stethoscope, permission: "services:view" },
       { label: "Medical Equipment", to: "/equipment", icon: Package, permission: "equipment:view" },
       { label: "Careers", to: "/careers", icon: Briefcase, permission: "careers:view" },
