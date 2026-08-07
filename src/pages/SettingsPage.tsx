@@ -346,7 +346,12 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
   );
 }
 
-type HomeHeroFormValues = { home_hero: WebsiteSettings["home_hero"] };
+type HomeHeroFormValues = {
+  home_hero: WebsiteSettings["home_hero"];
+  hero_headline: string;
+  hero_subtitle: string;
+  hero_description: string;
+};
 
 function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
   const qc = useQueryClient();
@@ -356,7 +361,12 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
   });
 
   const { register, handleSubmit, reset, control } = useForm<HomeHeroFormValues>({
-    defaultValues: { home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [], stats: [] } },
+    defaultValues: { 
+      home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [], stats: [] },
+      hero_headline: "",
+      hero_subtitle: "",
+      hero_description: "",
+    },
   });
   const avatarsField = useFieldArray({ control, name: "home_hero.trust_badge_avatars" });
   const sliderField = useFieldArray({ control, name: "home_hero.slider_images" });
@@ -372,6 +382,9 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
           slider_images: data.home_hero?.slider_images ?? [],
           stats: data.home_hero?.stats ?? [],
         },
+        hero_headline: data.hero_headline ?? "",
+        hero_subtitle: data.hero_subtitle ?? "",
+        hero_description: data.hero_description ?? "",
       });
     }
   }, [data, reset]);
@@ -388,15 +401,45 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
   if (isLoading) return <Skeleton className="h-[420px] rounded-xl" />;
 
   return (
-    <form onSubmit={handleSubmit((v) => mutation.mutate({ home_hero: v.home_hero }))}>
+    <form onSubmit={handleSubmit((v) => mutation.mutate({ 
+      home_hero: v.home_hero,
+      hero_headline: v.hero_headline,
+      hero_subtitle: v.hero_subtitle,
+      hero_description: v.hero_description
+    }))}>
       <Card>
         <CardHeader>
           <CardTitle>Home page hero</CardTitle>
           <CardDescription>
-            Manage the background slider images and the floating Trust Badge details.
+            Manage the hero text content, background slider images and the floating Trust Badge details.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div className="space-y-6 pt-2 pb-6 border-b">
+            <Field label="Hero Headline">
+              <Input
+                placeholder="Trusted Home Health Care at Your Doorstep"
+                {...register("hero_headline")}
+                disabled={!canEdit}
+              />
+            </Field>
+            <Field label="Hero Subtitle">
+              <Input
+                placeholder="Har Pal Aapke Apno Ke Sath"
+                {...register("hero_subtitle")}
+                disabled={!canEdit}
+              />
+            </Field>
+            <Field label="Hero Description">
+              <Textarea
+                rows={3}
+                placeholder="Trusted Home Nursing, Patient Attendant, Elderly Care..."
+                {...register("hero_description")}
+                disabled={!canEdit}
+              />
+            </Field>
+          </div>
+
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Slider Images</Label>
@@ -741,7 +784,6 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
 
   const { register, handleSubmit, reset, control } = useForm<WebsiteSettings>();
   const whyChooseField = useFieldArray({ control, name: "why_choose_items" });
-  const conditionsField = useFieldArray({ control, name: "conditions_list" as never }); // Hack for string array
 
   useEffect(() => {
     if (data) reset(data);
