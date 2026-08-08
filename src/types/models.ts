@@ -82,6 +82,7 @@ export interface Category extends BaseDoc {
   description: string;
   icon?: string | null;
   image?: ImageAsset | null;
+  hero_image?: ImageAsset | null;
   order: number;
   is_active: boolean;
 }
