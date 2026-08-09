@@ -15,9 +15,11 @@ import {
 } from "@/pages/resource-pages";
 import { BookingsPage } from "@/pages/bookings/BookingsPage";
 import { PhysioRequestsPage } from "@/pages/physio/PhysioRequestsPage";
-import { RentalsPage } from "@/pages/RentalsPage";
+import CareersPage from "@/pages/CareersPage";
+import RentalsPage from "@/pages/RentalsPage";
+import ElderCareRequestsPage from "@/pages/ElderCareRequestsPage";
 import { ApplicationsPage } from "@/pages/ApplicationsPage";
-import { ContactPage } from "@/pages/ContactPage";
+import ContactPage from "@/pages/ContactPage";
 import { MediaLibraryPage } from "@/pages/MediaLibraryPage";
 import { SeoPage } from "@/pages/SeoPage";
 import { SettingsPage } from "@/pages/SettingsPage";
@@ -48,6 +50,7 @@ export function AppRoutes() {
           <Route path="/videos" element={<VideosPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/faqs" element={<FaqPage />} />
+          <Route path="/elder-care" element={<ElderCareRequestsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/media" element={<MediaLibraryPage />} />
           <Route path="/seo" element={<SeoPage />} />
