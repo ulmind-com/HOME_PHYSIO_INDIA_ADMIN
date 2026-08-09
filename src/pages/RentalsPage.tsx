@@ -153,11 +153,15 @@ export function RentalsPage() {
                   <TableCell>
                     <p className="font-medium">{r.customer_name}</p>
                     <p className="text-xs text-muted-foreground">{r.customer_phone}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1 max-w-[200px]" title={r.address}>
+                      {r.address}
+                    </p>
                   </TableCell>
                   <TableCell className="text-sm">{r.equipment_name}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(r.start_date)}
                     {r.end_date ? ` → ${formatDate(r.end_date)}` : ""}
+                    {r.duration_days ? <><br/>({r.duration_days} days)</> : ""}
                   </TableCell>
                   <TableCell className="text-sm">
                     {r.total_amount ? formatCurrency(r.total_amount) : "—"}
