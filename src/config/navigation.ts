@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Stethoscope,
   CalendarCheck,
+  Activity,
   Package,
   ClipboardList,
   Briefcase,
@@ -47,6 +48,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "Operations",
     items: [
       { label: "Bookings", to: "/bookings", icon: CalendarCheck, permission: "bookings:view" },
+      { label: "Physio Requests", to: "/physio", icon: Activity, permission: "bookings:view" },
       { label: "Rental Requests", to: "/rentals", icon: ClipboardList, permission: "rentals:view" },
       { label: "Job Applications", to: "/applications", icon: FileUser, permission: "applications:view" },
       { label: "Contact Messages", to: "/contact", icon: Mail, permission: "contacts:view" },
