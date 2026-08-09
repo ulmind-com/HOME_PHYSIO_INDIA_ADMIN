@@ -30,9 +30,10 @@ type ElderCareRequest = {
   id: string;
   full_name: string;
   phone_number: string;
+  city: string;
   service_type: string;
-  patient_condition: string;
-  preferred_duty_hours: string;
+  patient_condition?: string;
+  preferred_duty_hours?: string;
   status: "pending" | "in_progress" | "completed" | "cancelled";
   created_at: string;
 };
@@ -148,8 +149,8 @@ export default function ElderCareRequestsPage() {
             <TableRow className="bg-slate-50 hover:bg-slate-50">
               <TableHead className="w-[180px]">Date</TableHead>
               <TableHead>Customer</TableHead>
+              <TableHead>City</TableHead>
               <TableHead>Service Required</TableHead>
-              <TableHead>Duty Hours</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -177,12 +178,12 @@ export default function ElderCareRequestsPage() {
                     <p className="font-medium">{r.full_name}</p>
                     <p className="text-xs text-muted-foreground">{r.phone_number}</p>
                   </TableCell>
+                  <TableCell>{r.city}</TableCell>
                   <TableCell>
                     <span className="inline-flex items-center rounded-md bg-teal-50 px-2 py-1 text-xs font-medium text-teal-700 ring-1 ring-inset ring-teal-600/20">
                       {r.service_type}
                     </span>
                   </TableCell>
-                  <TableCell>{r.preferred_duty_hours}</TableCell>
                   <TableCell>
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border ${getStatusColor(
@@ -258,6 +259,12 @@ export default function ElderCareRequestsPage() {
                       {selectedRequest.phone_number}
                     </a>
                   </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
+                      <User className="h-3.5 w-3.5" /> City
+                    </h4>
+                    <p className="text-sm font-medium">{selectedRequest.city}</p>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -267,23 +274,27 @@ export default function ElderCareRequestsPage() {
                     </h4>
                     <p className="text-sm font-medium">{selectedRequest.service_type}</p>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
-                      <Clock className="h-3.5 w-3.5" /> Duty Hours
-                    </h4>
-                    <p className="text-sm font-medium">{selectedRequest.preferred_duty_hours}</p>
-                  </div>
+                  {selectedRequest.preferred_duty_hours && (
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mb-1">
+                        <Clock className="h-3.5 w-3.5" /> Duty Hours (Legacy)
+                      </h4>
+                      <p className="text-sm font-medium">{selectedRequest.preferred_duty_hours}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="rounded-lg bg-slate-50 p-4 border">
-                <h4 className="text-sm font-medium text-muted-foreground mb-2">
-                  Patient Condition & Requirement
-                </h4>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-700">
-                  {selectedRequest.patient_condition}
-                </p>
-              </div>
+              {selectedRequest.patient_condition && (
+                <div className="rounded-lg bg-slate-50 p-4 border">
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                    Patient Condition & Requirement (Legacy)
+                  </h4>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-700">
+                    {selectedRequest.patient_condition}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
