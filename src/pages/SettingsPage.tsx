@@ -853,7 +853,7 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => featuresField.append({ title: "", description: "", icon: "heart-pulse" })}
+                  onClick={() => featuresField.append({ title: "", description: "", icon: "heart-pulse", icon_image: "" })}
                 >
                   <Plus className="h-4 w-4" /> Add Feature
                 </Button>
@@ -862,50 +862,70 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
             <div className="space-y-4">
               {featuresField.fields.map((f, i) => (
                 <div key={f.id} className="p-4 border rounded-lg bg-muted/10 space-y-3">
-                  <div className="flex gap-3 items-end">
-                    <div className="flex-1 space-y-1.5">
-                      <Label className="text-xs">Title</Label>
-                      <Input {...register(`home_about_features.${i}.title` as const)} disabled={!canEdit} />
-                    </div>
-                    <div className="w-40 space-y-1.5">
-                      <Label className="text-xs">Icon</Label>
+                  <div className="flex gap-3 items-start">
+                    <div className="w-32 shrink-0 space-y-1.5">
+                      <Label className="text-xs">Icon Image (PNG)</Label>
                       <Controller
                         control={control}
-                        name={`home_about_features.${i}.icon` as const}
+                        name={`home_about_features.${i}.icon_image` as const}
                         render={({ field }) => (
-                          <select
-                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
-                            value={field.value || "heart-pulse"}
+                          <ImageUpload
+                            value={field.value ?? undefined}
                             onChange={field.onChange}
-                            disabled={!canEdit}
-                          >
-                            {ICON_OPTIONS.map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
-                            ))}
-                          </select>
+                            folder="nupun/home-about/icons"
+                            aspect="square"
+                          />
                         )}
                       />
                     </div>
-                    {canEdit && (
-                      <Button type="button" variant="ghost" size="icon" onClick={() => featuresField.remove(i)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    )}
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Description</Label>
-                    <Textarea
-                      {...register(`home_about_features.${i}.description` as const)}
-                      rows={2}
-                      disabled={!canEdit}
-                    />
+                    <div className="flex-1 space-y-3">
+                      <div className="flex gap-3 items-end">
+                        <div className="flex-1 space-y-1.5">
+                          <Label className="text-xs">Title</Label>
+                          <Input {...register(`home_about_features.${i}.title` as const)} disabled={!canEdit} />
+                        </div>
+                        <div className="w-36 space-y-1.5">
+                          <Label className="text-xs">Fallback Icon</Label>
+                          <Controller
+                            control={control}
+                            name={`home_about_features.${i}.icon` as const}
+                            render={({ field }) => (
+                              <select
+                                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+                                value={field.value || "heart-pulse"}
+                                onChange={field.onChange}
+                                disabled={!canEdit}
+                              >
+                                {ICON_OPTIONS.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                          />
+                        </div>
+                        {canEdit && (
+                          <Button type="button" variant="ghost" size="icon" onClick={() => featuresField.remove(i)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        )}
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs">Description</Label>
+                        <Textarea
+                          {...register(`home_about_features.${i}.description` as const)}
+                          rows={2}
+                          disabled={!canEdit}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
 
           {/* ── Image Tiles (4 cards) ── */}
           <div className="space-y-3">

@@ -331,6 +331,7 @@ export interface HomeAboutFeature {
   title: string;
   description: string;
   icon: string;
+  icon_image?: string | null;
 }
 
 export interface HomeAboutTile {
