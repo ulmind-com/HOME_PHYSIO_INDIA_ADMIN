@@ -69,9 +69,7 @@ export function SettingsPage() {
           <TabsTrigger value="home-about">
             <Home className="h-4 w-4" /> Home About
           </TabsTrigger>
-          <TabsTrigger value="about">
-            <Info className="h-4 w-4" /> About Page
-          </TabsTrigger>
+
           <TabsTrigger value="content">
             <Layers className="h-4 w-4" /> Content Sections
           </TabsTrigger>
@@ -95,9 +93,7 @@ export function SettingsPage() {
         <TabsContent value="home-about">
           <HomeAboutForm canEdit={canEdit} />
         </TabsContent>
-        <TabsContent value="about">
-          <AboutForm canEdit={canEdit} />
-        </TabsContent>
+
         <TabsContent value="content">
           <ContentSectionsForm canEdit={canEdit} />
         </TabsContent>
