@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { apiClient } from "@/lib/api";
+import { rawClient as apiClient } from "@/services/api/client";
 
 type ElderCareRequest = {
   id: string;
@@ -38,14 +38,6 @@ type ElderCareRequest = {
   created_at: string;
 };
 
-type APIResponse = {
-  total: number;
-  page: number;
-  size: number;
-  pages: number;
-  items: ElderCareRequest[];
-};
-
 export default function ElderCareRequestsPage() {
   const [requests, setRequests] = useState<ElderCareRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,10 +48,11 @@ export default function ElderCareRequestsPage() {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get<APIResponse>(
+      const res = await apiClient.get(
         `/elder-care?page=1&size=100${statusFilter !== "all" ? `&status=${statusFilter}` : ""}`
       );
-      setRequests(res.items || []);
+      const data = (res.data as any)?.data ?? res.data;
+      setRequests(data?.items || []);
     } catch (error) {
       console.error("Failed to fetch elder care requests", error);
     } finally {

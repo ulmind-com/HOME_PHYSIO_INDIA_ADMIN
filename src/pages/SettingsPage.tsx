@@ -870,10 +870,8 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                         name={`home_about_features.${i}.icon_image` as const}
                         render={({ field }) => (
                           <ImageUpload
-                            value={field.value ?? undefined}
+                            value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
                             onChange={field.onChange}
-                            folder="nupun/home-about/icons"
-                            aspect="square"
                           />
                         )}
                       />
@@ -962,10 +960,10 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                         name={`home_about_tiles.${i}.image` as const}
                         render={({ field }) => (
                           <ImageUpload
-                            value={field.value ?? undefined}
+                            value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
                             onChange={field.onChange}
                             folder="nupun/home-about"
-                            aspect="portrait"
+                            aspect="square"
                           />
                         )}
                       />

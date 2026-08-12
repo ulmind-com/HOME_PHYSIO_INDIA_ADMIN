@@ -2,14 +2,14 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Activity, Download, Eye } from "lucide-react";
-import { toast } from "sonner";
+import { Activity, Eye } from "lucide-react";
+
 import type { ListParams } from "@/types/api";
 import type { Booking, BookingStatus } from "@/types/models";
 import { bookingService } from "@/services/booking.service";
-import { normalizeError } from "@/services/api/client";
+
 import { useAuth } from "@/contexts/AuthContext";
-import { downloadBlob, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { env } from "@/config/env";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SearchInput } from "@/components/common/SearchInput";
@@ -66,7 +66,7 @@ const STATUS_FILTERS: { label: string; value: string }[] = [
 ];
 
 export function PhysioRequestsPage() {
-  const { hasPermission } = useAuth();
+  useAuth();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
