@@ -2,145 +2,179 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BellRing, CalendarCheck } from "lucide-react";
-import { notificationService } from "@/services/notification.service";
+import { STORAGE_KEYS, env } from "@/config/env";
 
-let ringInterval: ReturnType<typeof setInterval> | null = null;
+/**
+ * LiveNotificationListener
+ * 
+ * Polls the backend for new unread notifications every 5 seconds using
+ * raw `fetch()` (bypassing axios to avoid any interceptor issues).
+ * When a new notification is detected, plays a ringing sound and shows
+ * a Zomato/Swiggy-style full-screen alert modal.
+ * 
+ * Also listens for `visibilitychange` to immediately re-poll when the
+ * tab becomes visible (handles mobile Chrome throttling).
+ */
 
-const playRingingSound = () => {
+// ─── Sound ───────────────────────────────────────────────────
+let ringTimer: ReturnType<typeof setInterval> | null = null;
+
+function playSound() {
   try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!Ctx) return;
+    const ctx = new Ctx();
     const now = ctx.currentTime;
 
-    // First beep
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    osc1.type = "sine";
-    osc1.frequency.value = 659.25; // E5
-    gain1.gain.setValueAtTime(0, now);
-    gain1.gain.linearRampToValueAtTime(0.25, now + 0.05);
-    gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.start(now);
-    osc1.stop(now + 0.3);
+    const beep = (freq: number, start: number, dur: number) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0, start);
+      g.gain.linearRampToValueAtTime(0.25, start + 0.04);
+      g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+      o.connect(g).connect(ctx.destination);
+      o.start(start);
+      o.stop(start + dur);
+    };
 
-    // Second beep (higher)
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = "sine";
-    osc2.frequency.value = 880.0; // A5
-    gain2.gain.setValueAtTime(0, now + 0.2);
-    gain2.gain.linearRampToValueAtTime(0.25, now + 0.25);
-    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-    osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.start(now + 0.2);
-    osc2.stop(now + 0.6);
+    beep(660, now, 0.3);
+    beep(880, now + 0.18, 0.5);
   } catch {
-    // Ignore audio policy issues
+    /* ignore */
   }
-};
+}
 
-const stopRinging = () => {
-  if (ringInterval) {
-    clearInterval(ringInterval);
-    ringInterval = null;
+function startRinging() {
+  stopRinging();
+  playSound();
+  ringTimer = setInterval(playSound, 3000);
+}
+
+function stopRinging() {
+  if (ringTimer) {
+    clearInterval(ringTimer);
+    ringTimer = null;
   }
-};
+}
 
+// ─── Raw fetch helper (no axios, no interceptors) ────────────
+async function fetchUnreadCount(): Promise<number> {
+  const token = localStorage.getItem(STORAGE_KEYS.accessToken);
+  if (!token) return -1; // not logged in
+
+  const res = await fetch(`${env.API_BASE_URL}/notifications/unread-count`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) return -1;
+  const json = await res.json();
+  // Backend returns: { success: true, data: { unread: N }, message: "..." }
+  return json?.data?.unread ?? 0;
+}
+
+async function fetchLatestNotification(): Promise<{
+  title: string;
+  message: string;
+} | null> {
+  const token = localStorage.getItem(STORAGE_KEYS.accessToken);
+  if (!token) return null;
+
+  const res = await fetch(
+    `${env.API_BASE_URL}/notifications?page=1&page_size=1`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+  if (!res.ok) return null;
+  const json = await res.json();
+  const item = json?.data?.items?.[0];
+  if (!item) return null;
+  return { title: item.title, message: item.message };
+}
+
+// ─── Component ───────────────────────────────────────────────
 export function LiveNotificationListener() {
   const navigate = useNavigate();
-  const prevUnreadRef = useRef<number | null>(null);
-  const [activeAlert, setActiveAlert] = useState<{
+  const baselineRef = useRef<number | null>(null);
+  const [alert, setAlert] = useState<{
     title: string;
     message: string;
   } | null>(null);
 
-  // Poll unread count directly via fetch (no react-query, no window focus dependency)
-  useEffect(() => {
-    let mounted = true;
+  const poll = useCallback(async () => {
+    try {
+      const count = await fetchUnreadCount();
+      if (count < 0) return; // not logged in or API error
 
-    const poll = async () => {
-      try {
-        const result = await notificationService.unreadCount();
-        const currentUnread = result.unread;
-
-        if (!mounted) return;
-
-        // On first poll, just record the baseline
-        if (prevUnreadRef.current === null) {
-          prevUnreadRef.current = currentUnread;
-          return;
-        }
-
-        // If unread count increased, a new notification arrived!
-        if (currentUnread > prevUnreadRef.current) {
-          // Try to fetch latest notification details
-          try {
-            const notifs = await notificationService.list({
-              page: 1,
-              page_size: 1,
-            });
-            const latest = notifs?.items?.[0];
-            if (mounted) {
-              setActiveAlert({
-                title: latest?.title || "New Booking Received!",
-                message:
-                  latest?.message ||
-                  "A new request has been submitted. Check your notifications.",
-              });
-            }
-          } catch {
-            if (mounted) {
-              setActiveAlert({
-                title: "New Booking Received!",
-                message:
-                  "A new request has been submitted. Check your notifications.",
-              });
-            }
-          }
-
-          // Start ringing
-          stopRinging();
-          playRingingSound();
-          ringInterval = setInterval(playRingingSound, 2500);
-        }
-
-        prevUnreadRef.current = currentUnread;
-      } catch {
-        // Silent fail — network error, auth error, etc.
+      // First poll: just record the baseline
+      if (baselineRef.current === null) {
+        baselineRef.current = count;
+        console.log("[LiveNotif] Baseline set:", count);
+        return;
       }
-    };
 
-    // Initial poll immediately
-    poll();
+      // Detect increase
+      if (count > baselineRef.current) {
+        console.log("[LiveNotif] NEW! was:", baselineRef.current, "now:", count);
 
-    // Then poll every 5 seconds
-    const intervalId = setInterval(poll, 5000);
+        // Get details of the latest notification
+        const latest = await fetchLatestNotification();
 
-    return () => {
-      mounted = false;
-      clearInterval(intervalId);
-      stopRinging();
-    };
+        setAlert({
+          title: latest?.title || "🔔 New Booking Received!",
+          message:
+            latest?.message ||
+            "A new request has been submitted. Tap to view details.",
+        });
+
+        startRinging();
+      }
+
+      baselineRef.current = count;
+    } catch (err) {
+      console.warn("[LiveNotif] Poll error:", err);
+    }
   }, []);
 
-  const dismissAlert = useCallback(() => {
-    setActiveAlert(null);
+  useEffect(() => {
+    // Poll immediately on mount
+    poll();
+
+    // Then every 5 seconds
+    const id = setInterval(poll, 5000);
+
+    // Also poll when tab becomes visible (mobile Chrome throttles setInterval)
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        console.log("[LiveNotif] Tab visible, polling now");
+        poll();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+      stopRinging();
+    };
+  }, [poll]);
+
+  const dismiss = useCallback(() => {
+    setAlert(null);
     stopRinging();
   }, []);
 
-  const viewBooking = useCallback(() => {
-    setActiveAlert(null);
+  const viewDetails = useCallback(() => {
+    setAlert(null);
     stopRinging();
     navigate("/bookings");
   }, [navigate]);
 
+  // ─── Render ──────────────────────────────────────────────
   return (
     <AnimatePresence>
-      {activeAlert && (
+      {alert && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
@@ -150,62 +184,62 @@ export function LiveNotificationListener() {
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
-          {/* Zomato-style card */}
+          {/* Card */}
           <motion.div
-            initial={{ scale: 0.85, opacity: 0, y: 30 }}
+            initial={{ scale: 0.8, opacity: 0, y: 40 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: -20 }}
-            transition={{ type: "spring", damping: 22, stiffness: 280 }}
-            className="relative w-full max-w-md overflow-hidden rounded-[24px] bg-white text-center shadow-2xl"
+            exit={{ scale: 0.9, opacity: 0, y: -20 }}
+            transition={{ type: "spring", damping: 22, stiffness: 260 }}
+            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white text-center shadow-2xl"
           >
-            {/* Animated top accent bar */}
-            <div className="h-2 w-full bg-gradient-to-r from-red-500 via-orange-500 to-red-500 bg-[length:200%_100%] animate-[shimmer_2s_ease-in-out_infinite]" />
+            {/* Top accent */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-orange-400 to-red-500" />
 
-            <div className="p-8 pb-10">
-              {/* Animated bell icon */}
-              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 relative">
+            <div className="px-8 pt-8 pb-10">
+              {/* Bell icon */}
+              <div className="mx-auto mb-6 relative flex h-20 w-20 items-center justify-center rounded-full bg-red-50 text-red-600">
                 <motion.div
                   animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.4, 0, 0.4],
+                    scale: [1, 1.4, 1],
+                    opacity: [0.3, 0, 0.3],
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 1.8,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="absolute inset-0 rounded-full bg-red-500/20"
+                  className="absolute inset-0 rounded-full bg-red-400/20"
                 />
                 <motion.div
-                  animate={{ rotate: [0, -15, 15, -15, 15, 0] }}
+                  animate={{ rotate: [0, -12, 12, -12, 12, 0] }}
                   transition={{
-                    duration: 1.5,
+                    duration: 1.2,
                     repeat: Infinity,
-                    repeatDelay: 1,
+                    repeatDelay: 0.8,
                   }}
                 >
                   <BellRing className="h-10 w-10" />
                 </motion.div>
               </div>
 
-              <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-3">
-                {activeAlert.title}
+              <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-2">
+                {alert.title}
               </h2>
-              <p className="text-[15px] leading-relaxed text-gray-500 mb-8">
-                {activeAlert.message}
+              <p className="text-sm leading-relaxed text-gray-500 mb-8">
+                {alert.message}
               </p>
 
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={viewBooking}
-                  className="w-full rounded-xl bg-red-600 px-5 py-4 text-[15px] font-semibold text-white shadow-lg shadow-red-600/30 transition-all hover:bg-red-700 hover:shadow-red-600/40 active:scale-[0.98] flex items-center justify-center gap-2"
+                  onClick={viewDetails}
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 py-4 text-[15px] font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:bg-red-700 active:scale-[0.97]"
                 >
                   <CalendarCheck className="h-5 w-5" />
                   View Booking
                 </button>
                 <button
-                  onClick={dismissAlert}
-                  className="w-full rounded-xl bg-gray-100 px-5 py-3.5 text-[15px] font-medium text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.98]"
+                  onClick={dismiss}
+                  className="w-full rounded-2xl bg-gray-100 px-5 py-3.5 text-[15px] font-medium text-gray-700 transition-colors hover:bg-gray-200 active:scale-[0.97]"
                 >
                   Dismiss
                 </button>
