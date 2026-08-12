@@ -816,7 +816,12 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
   if (isLoading) return <Skeleton className="h-[400px] rounded-xl" />;
 
   return (
-    <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+    <form onSubmit={handleSubmit((v) => mutation.mutate({
+      home_about_heading: v.home_about_heading,
+      home_about_description: v.home_about_description,
+      home_about_features: v.home_about_features,
+      home_about_tiles: v.home_about_tiles,
+    }))}>
       <Card>
         <CardHeader>
           <CardTitle>Home Page — About Us Section</CardTitle>

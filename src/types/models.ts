@@ -328,19 +328,19 @@ export interface WhyChooseItem {
 }
 
 export interface HomeAboutFeature {
-  title: string;
-  description: string;
-  icon: string;
-  icon_image?: string | null;
+  title?: string | null;
+  description?: string | null;
+  icon?: string | null;
+  icon_image?: ImageAsset | null;
 }
 
 export interface HomeAboutTile {
-  image?: string | null;
-  count: string;
-  title: string;
-  description: string;
-  cta_label: string;
-  cta_link: string;
+  image?: ImageAsset | null;
+  count?: string | null;
+  title?: string | null;
+  description?: string | null;
+  cta_label?: string | null;
+  cta_link?: string | null;
 }
 
 export interface LegalSection {
