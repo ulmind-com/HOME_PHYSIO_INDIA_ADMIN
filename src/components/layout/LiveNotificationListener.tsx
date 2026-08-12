@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { BellRing, CalendarCheck } from "lucide-react";
-import { useUnreadCount } from "@/hooks/useNotifications";
+import { notificationService } from "@/services/notification.service";
 
 let ringInterval: NodeJS.Timeout | null = null;
 
@@ -52,43 +52,56 @@ const playRingingSound = () => {
 };
 
 export function LiveNotificationListener() {
-  const { data: unread = 0 } = useUnreadCount();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const prevUnreadRef = useRef(unread);
-
+  
+  // Track unread count internally to avoid react-query focus pause
+  const prevUnreadRef = useRef<number | null>(null);
   const [activeAlert, setActiveAlert] = useState<{ title: string; message: string } | null>(null);
 
   useEffect(() => {
-    if (unread > prevUnreadRef.current) {
-      // New notification arrived!
-      
-      // Stop previous ringing if any
-      if (ringInterval) clearInterval(ringInterval);
-      
-      // Start ringing every 2.5 seconds
-      playRingingSound();
-      ringInterval = setInterval(playRingingSound, 2500);
+    // Poll every 5 seconds regardless of window focus
+    const pollInterval = setInterval(async () => {
+      try {
+        const data = await notificationService.unreadCount();
+        const unread = data.unread;
 
-      queryClient.fetchQuery({
-        queryKey: ["notifications", "list", { page: 1, page_size: 12 }],
-      }).then((data: any) => {
-        const latest = data?.items?.[0];
-        setActiveAlert({
-          title: latest?.title || "New Booking Received!",
-          message: latest?.message || "Please check your notifications for details.",
-        });
-      }).catch(() => {
-        setActiveAlert({
-          title: "New Booking Received!",
-          message: "Please check your notifications for details.",
-        });
-      });
-      
-      queryClient.invalidateQueries({ queryKey: ["notifications", "list"] });
-    }
-    prevUnreadRef.current = unread;
-  }, [unread, queryClient]);
+        if (prevUnreadRef.current !== null && unread > prevUnreadRef.current) {
+          // New notification arrived!
+          
+          // Stop previous ringing if any
+          if (ringInterval) clearInterval(ringInterval);
+          
+          // Start ringing every 2.5 seconds
+          playRingingSound();
+          ringInterval = setInterval(playRingingSound, 2500);
+
+          queryClient.fetchQuery({
+            queryKey: ["notifications", "list", { page: 1, page_size: 12 }],
+          }).then((res: any) => {
+            const latest = res?.items?.[0];
+            setActiveAlert({
+              title: latest?.title || "New Booking Received!",
+              message: latest?.message || "Please check your notifications for details.",
+            });
+          }).catch(() => {
+            setActiveAlert({
+              title: "New Booking Received!",
+              message: "Please check your notifications for details.",
+            });
+          });
+          
+          queryClient.invalidateQueries({ queryKey: ["notifications", "list"] });
+          queryClient.invalidateQueries({ queryKey: ["notifications", "unread"] });
+        }
+        prevUnreadRef.current = unread;
+      } catch (err) {
+        // Silent fail on polling errors
+      }
+    }, 5000);
+
+    return () => clearInterval(pollInterval);
+  }, [queryClient]);
 
   const dismissAlert = () => {
     setActiveAlert(null);
