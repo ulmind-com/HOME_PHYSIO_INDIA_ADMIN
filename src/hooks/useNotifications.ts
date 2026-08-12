@@ -10,7 +10,7 @@ export function useUnreadCount() {
     queryKey: [KEY, "unread"],
     queryFn: () => notificationService.unreadCount(),
     enabled: isAuthenticated,
-    refetchInterval: 60_000,
+    refetchInterval: 10_000,
     select: (d) => d.unread,
   });
 }
