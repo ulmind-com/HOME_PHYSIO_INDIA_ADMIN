@@ -858,7 +858,7 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => featuresField.append({ title: "", description: "", icon: "heart-pulse", icon_image: "" })}
+                  onClick={() => featuresField.append({ title: "", description: "", icon: "heart-pulse", icon_image: null })}
                 >
                   <Plus className="h-4 w-4" /> Add Feature
                 </Button>
@@ -941,7 +941,7 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                   size="sm"
                   onClick={() =>
                     tilesField.append({
-                      image: "",
+                      image: null,
                       count: "",
                       title: "",
                       description: "",
