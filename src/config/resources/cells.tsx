@@ -15,22 +15,23 @@ export function MediaCell({
   subtitle?: string | null;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-lg border border-border bg-secondary text-xs font-semibold text-accent">
+    <div className="flex items-center gap-4 group">
+      <div className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl border bg-secondary/50 shadow-sm transition-all duration-300 group-hover:shadow-md">
+        <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl ring-1 ring-inset ring-black/5 dark:ring-white/10" />
         {image?.url ? (
           <img
             src={image.url}
             alt={title}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
-          initials(title)
+          <span className="text-[14px] font-bold text-muted-foreground leading-none">{initials(title)}</span>
         )}
       </div>
       <div className="min-w-0">
-        <p className="truncate font-medium text-foreground">{title}</p>
+        <p className="truncate font-semibold text-foreground/90 transition-colors group-hover:text-foreground">{title}</p>
         {subtitle && (
-          <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+          <p className="truncate text-[13px] text-muted-foreground mt-0.5">{subtitle}</p>
         )}
       </div>
     </div>
