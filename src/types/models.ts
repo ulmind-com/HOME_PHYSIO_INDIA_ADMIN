@@ -327,6 +327,21 @@ export interface WhyChooseItem {
   detail: string;
 }
 
+export interface HomeAboutFeature {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export interface HomeAboutTile {
+  image?: string | null;
+  count: string;
+  title: string;
+  description: string;
+  cta_label: string;
+  cta_link: string;
+}
+
 export interface LegalSection {
   title: string;
   body: string;
@@ -370,6 +385,12 @@ export interface WebsiteSettings extends BaseDoc {
   about_welcome_title?: string | null;
   about_welcome_description?: string | null;
   about_welcome_image?: ImageAsset | null;
+
+  // Home About section
+  home_about_heading?: string | null;
+  home_about_description?: string | null;
+  home_about_features?: HomeAboutFeature[];
+  home_about_tiles?: HomeAboutTile[];
 
   // Content sections
   how_it_works_steps?: ValueItem[];

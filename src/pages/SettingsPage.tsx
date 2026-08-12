@@ -19,6 +19,7 @@ import {
   Info,
   Layers,
   Scale,
+  Home,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { ServicesHero, SocialLinks, WebsiteSettings } from "@/types/models";
@@ -65,6 +66,9 @@ export function SettingsPage() {
           <TabsTrigger value="social">
             <Share2 className="h-4 w-4" /> Social Links
           </TabsTrigger>
+          <TabsTrigger value="home-about">
+            <Home className="h-4 w-4" /> Home About
+          </TabsTrigger>
           <TabsTrigger value="about">
             <Info className="h-4 w-4" /> About Page
           </TabsTrigger>
@@ -87,6 +91,9 @@ export function SettingsPage() {
         </TabsContent>
         <TabsContent value="social">
           <SocialForm canEdit={canEdit} />
+        </TabsContent>
+        <TabsContent value="home-about">
+          <HomeAboutForm canEdit={canEdit} />
         </TabsContent>
         <TabsContent value="about">
           <AboutForm canEdit={canEdit} />
@@ -758,6 +765,229 @@ function AboutForm({ canEdit }: { canEdit: boolean }) {
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+        {canEdit && (
+          <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
+            <Button type="submit" loading={mutation.isPending}>
+              <Save /> Save changes
+            </Button>
+          </div>
+        )}
+      </Card>
+    </form>
+  );
+}
+
+const ICON_OPTIONS = [
+  { value: "heart-pulse", label: "Heart Pulse" },
+  { value: "icu", label: "ICU" },
+  { value: "shield-check", label: "Shield Check" },
+  { value: "clock", label: "Clock / 24×7" },
+];
+
+function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery({
+    queryKey: ["settings", "website"],
+    queryFn: () => settingsService.getWebsite(),
+  });
+
+  const { register, handleSubmit, reset, control } = useForm<WebsiteSettings>();
+  const featuresField = useFieldArray({ control, name: "home_about_features" });
+  const tilesField = useFieldArray({ control, name: "home_about_tiles" });
+
+  useEffect(() => {
+    if (data) reset(data);
+  }, [data, reset]);
+
+  const mutation = useMutation({
+    mutationFn: (values: Partial<WebsiteSettings>) => settingsService.updateWebsite(values),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["settings", "website"] });
+      toast.success("Home About section saved");
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  if (isLoading) return <Skeleton className="h-[400px] rounded-xl" />;
+
+  return (
+    <form onSubmit={handleSubmit((v) => mutation.mutate(v))}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Home Page — About Us Section</CardTitle>
+          <CardDescription>
+            Manage the heading, description, 3 feature highlights, and 4 image cards shown in the About section on the homepage.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          {/* ── Heading & Description ── */}
+          <div className="space-y-4">
+            <Field label="Section Heading">
+              <Input
+                {...register("home_about_heading")}
+                placeholder="Professionals dedicated to your health"
+                disabled={!canEdit}
+              />
+            </Field>
+            <Field label="Section Description">
+              <Textarea
+                {...register("home_about_description")}
+                rows={3}
+                placeholder="Nupun Home Health Care provides a qualified team of nursing staff..."
+                disabled={!canEdit}
+              />
+            </Field>
+          </div>
+
+          {/* ── Features (3 items) ── */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold">Feature Highlights (left side)</Label>
+              {canEdit && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => featuresField.append({ title: "", description: "", icon: "heart-pulse" })}
+                >
+                  <Plus className="h-4 w-4" /> Add Feature
+                </Button>
+              )}
+            </div>
+            <div className="space-y-4">
+              {featuresField.fields.map((f, i) => (
+                <div key={f.id} className="p-4 border rounded-lg bg-muted/10 space-y-3">
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1 space-y-1.5">
+                      <Label className="text-xs">Title</Label>
+                      <Input {...register(`home_about_features.${i}.title` as const)} disabled={!canEdit} />
+                    </div>
+                    <div className="w-40 space-y-1.5">
+                      <Label className="text-xs">Icon</Label>
+                      <Controller
+                        control={control}
+                        name={`home_about_features.${i}.icon` as const}
+                        render={({ field }) => (
+                          <select
+                            className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+                            value={field.value || "heart-pulse"}
+                            onChange={field.onChange}
+                            disabled={!canEdit}
+                          >
+                            {ICON_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      />
+                    </div>
+                    {canEdit && (
+                      <Button type="button" variant="ghost" size="icon" onClick={() => featuresField.remove(i)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Description</Label>
+                    <Textarea
+                      {...register(`home_about_features.${i}.description` as const)}
+                      rows={2}
+                      disabled={!canEdit}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Image Tiles (4 cards) ── */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold">Image Cards (right side — 2×2 grid)</Label>
+              {canEdit && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    tilesField.append({
+                      image: "",
+                      count: "",
+                      title: "",
+                      description: "",
+                      cta_label: "",
+                      cta_link: "/booking",
+                    })
+                  }
+                >
+                  <Plus className="h-4 w-4" /> Add Tile
+                </Button>
+              )}
+            </div>
+            <div className="space-y-4">
+              {tilesField.fields.map((f, i) => (
+                <div key={f.id} className="p-4 border rounded-lg bg-muted/10 space-y-3">
+                  <div className="flex gap-3 items-start">
+                    <div className="w-48 shrink-0 space-y-1.5">
+                      <Label className="text-xs">Image</Label>
+                      <Controller
+                        control={control}
+                        name={`home_about_tiles.${i}.image` as const}
+                        render={({ field }) => (
+                          <ImageUpload
+                            value={field.value ?? undefined}
+                            onChange={field.onChange}
+                            folder="nupun/home-about"
+                            aspect="portrait"
+                          />
+                        )}
+                      />
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Count (e.g. 120+)</Label>
+                          <Input {...register(`home_about_tiles.${i}.count` as const)} disabled={!canEdit} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Title</Label>
+                          <Input {...register(`home_about_tiles.${i}.title` as const)} disabled={!canEdit} />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs">Description</Label>
+                        <Input {...register(`home_about_tiles.${i}.description` as const)} disabled={!canEdit} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">CTA Label</Label>
+                          <Input {...register(`home_about_tiles.${i}.cta_label` as const)} disabled={!canEdit} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">CTA Link</Label>
+                          <Input {...register(`home_about_tiles.${i}.cta_link` as const)} disabled={!canEdit} />
+                        </div>
+                      </div>
+                    </div>
+                    {canEdit && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="mt-6"
+                        onClick={() => tilesField.remove(i)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
