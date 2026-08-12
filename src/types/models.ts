@@ -331,11 +331,11 @@ export interface HomeAboutFeature {
   title?: string | null;
   description?: string | null;
   icon?: string | null;
-  icon_image?: ImageAsset | null;
+  icon_image?: string | ImageAsset | null;
 }
 
 export interface HomeAboutTile {
-  image?: ImageAsset | null;
+  image?: string | ImageAsset | null;
   count?: string | null;
   title?: string | null;
   description?: string | null;
