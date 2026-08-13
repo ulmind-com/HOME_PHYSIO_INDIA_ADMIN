@@ -383,6 +383,7 @@ export interface WebsiteSettings extends BaseDoc {
   about_stats?: HeroStat[];
   about_values?: ValueItem[];
   about_commitments?: string[];
+  commitment_image?: ImageAsset | null;
   about_welcome_title?: string | null;
   about_welcome_description?: string | null;
   about_welcome_image?: ImageAsset | null;

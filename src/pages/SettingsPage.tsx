@@ -992,6 +992,26 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
               ))}
             </div>
           </div>
+
+          {/* Commitment Section Image */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <Label>Commitment Section — Team Image</Label>
+            <p className="text-xs text-muted-foreground">
+              This image appears on the homepage &quot;Why Choose Nupun&quot; section (right side).
+            </p>
+            <Controller
+              control={control}
+              name="commitment_image"
+              render={({ field }) => (
+                <ImageUpload
+                  value={field.value ?? undefined}
+                  onChange={field.onChange}
+                  folder="nupun/commitment"
+                  aspect="wide"
+                />
+              )}
+            />
+          </div>
         </CardContent>
         {canEdit && (
           <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
