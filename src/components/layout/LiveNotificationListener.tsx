@@ -193,11 +193,11 @@ export function LiveNotificationListener() {
             className="relative w-full max-w-md overflow-hidden rounded-3xl bg-white text-center shadow-2xl"
           >
             {/* Top accent */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-red-500 via-orange-400 to-red-500" />
+            <div className="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-primary" />
 
             <div className="px-8 pt-8 pb-10">
               {/* Bell icon */}
-              <div className="mx-auto mb-6 relative flex h-20 w-20 items-center justify-center rounded-full bg-red-50 text-red-600">
+              <div className="mx-auto mb-6 relative flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <motion.div
                   animate={{
                     scale: [1, 1.4, 1],
@@ -208,7 +208,7 @@ export function LiveNotificationListener() {
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
-                  className="absolute inset-0 rounded-full bg-red-400/20"
+                  className="absolute inset-0 rounded-full bg-primary/20"
                 />
                 <motion.div
                   animate={{ rotate: [0, -12, 12, -12, 12, 0] }}
@@ -232,7 +232,7 @@ export function LiveNotificationListener() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={viewDetails}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 py-4 text-[15px] font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:bg-red-700 active:scale-[0.97]"
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 active:scale-[0.97]"
                 >
                   <CalendarCheck className="h-5 w-5" />
                   View Booking
