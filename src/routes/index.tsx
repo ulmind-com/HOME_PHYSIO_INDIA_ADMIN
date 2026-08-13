@@ -14,6 +14,7 @@ import {
   FaqPage,
 } from "@/pages/resource-pages";
 import { BookingsPage } from "@/pages/bookings/BookingsPage";
+import { ComprehensiveBookingsPage } from "@/pages/bookings/ComprehensiveBookingsPage";
 import { PhysioRequestsPage } from "@/pages/physio/PhysioRequestsPage";
 import { RentalsPage } from "@/pages/RentalsPage";
 import ElderCareRequestsPage from "@/pages/ElderCareRequestsPage";
@@ -40,6 +41,7 @@ export function AppRoutes() {
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/bookings" element={<BookingsPage />} />
+          <Route path="/comprehensive-bookings" element={<ComprehensiveBookingsPage />} />
           <Route path="/physio" element={<PhysioRequestsPage />} />
           <Route path="/equipment" element={<EquipmentPage />} />
           <Route path="/rentals" element={<RentalsPage />} />

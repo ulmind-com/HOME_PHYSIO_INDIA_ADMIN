@@ -21,6 +21,7 @@ import {
   ScrollText,
   UserCircle,
   FolderTree,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -48,6 +49,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "Operations",
     items: [
       { label: "Bookings", to: "/bookings", icon: CalendarCheck, permission: "bookings:view" },
+      { label: "Comprehensive Bookings", to: "/comprehensive-bookings", icon: Sparkles, permission: "bookings:view" },
       { label: "Physio Requests", to: "/physio", icon: Activity, permission: "bookings:view" },
       { label: "Rental Requests", to: "/rentals", icon: ClipboardList, permission: "rentals:view" },
       { label: "Job Applications", to: "/applications", icon: FileUser, permission: "applications:view" },

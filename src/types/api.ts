@@ -33,5 +33,6 @@ export interface ListParams {
   search?: string;
   sort_by?: string;
   sort_order?: "asc" | "desc";
+  source?: string;
   [key: string]: string | number | boolean | undefined;
 }

@@ -20,8 +20,9 @@ export const bookingService = {
       assigned_staff_name,
     }),
   remove: (id: string) => http.del<null>(`${endpoints.bookings.root}/${id}`),
-  exportCsv: async (): Promise<Blob> => {
+  exportCsv: async (params?: Record<string, any>): Promise<Blob> => {
     const res = await rawClient.get(endpoints.bookings.export, {
+      params,
       responseType: "blob",
     });
     return res.data as Blob;
