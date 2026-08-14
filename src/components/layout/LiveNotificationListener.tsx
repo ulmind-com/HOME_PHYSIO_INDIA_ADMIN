@@ -66,6 +66,7 @@ async function fetchUnreadCount(): Promise<number> {
 
   const res = await fetch(`${env.API_BASE_URL}/notifications/unread-count`, {
     headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store"
   });
 
   if (!res.ok) return -1;
@@ -77,61 +78,57 @@ async function fetchUnreadCount(): Promise<number> {
 async function fetchLatestNotification(): Promise<{
   title: string;
   message: string;
+  type?: string;
 } | null> {
   const token = localStorage.getItem(STORAGE_KEYS.accessToken);
   if (!token) return null;
 
   const res = await fetch(
-    `${env.API_BASE_URL}/notifications?page=1&page_size=1`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    `${env.API_BASE_URL}/notifications?page=1&page_size=1&is_read=false`,
+    { 
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store" 
+    }
   );
 
   if (!res.ok) return null;
   const json = await res.json();
   const item = json?.data?.items?.[0];
   if (!item) return null;
-  return { title: item.title, message: item.message };
+  return { title: item.title, message: item.message, type: item.type };
 }
 
 // ─── Component ───────────────────────────────────────────────
 export function LiveNotificationListener() {
   const navigate = useNavigate();
-  const baselineRef = useRef<number | null>(null);
+  const isAlertingRef = useRef(false);
   const [alert, setAlert] = useState<{
     title: string;
     message: string;
+    type?: string;
   } | null>(null);
 
   const poll = useCallback(async () => {
     try {
       const count = await fetchUnreadCount();
-      if (count < 0) return; // not logged in or API error
+      if (count <= 0) return; // not logged in or API error or 0 unread
 
-      // First poll: just record the baseline
-      if (baselineRef.current === null) {
-        baselineRef.current = count;
-        console.log("[LiveNotif] Baseline set:", count);
-        return;
-      }
+      if (isAlertingRef.current) return; // already alerting
 
-      // Detect increase
-      if (count > baselineRef.current) {
-        console.log("[LiveNotif] NEW! was:", baselineRef.current, "now:", count);
+      console.log("[LiveNotif] Unread notifications:", count);
 
-        // Get details of the latest notification
-        const latest = await fetchLatestNotification();
+      isAlertingRef.current = true;
+      const latest = await fetchLatestNotification();
 
-        setAlert({
-          title: latest?.title || "🔔 New Booking Received!",
-          message:
-            latest?.message ||
-            "A new request has been submitted. Tap to view details.",
-        });
+      setAlert({
+        title: latest?.title || "🔔 Unread Notifications!",
+        message:
+          latest?.message ||
+          `You have ${count} unread notification(s). Tap to view details.`,
+        type: latest?.type,
+      });
 
-        startRinging();
-      }
-
-      baselineRef.current = count;
+      startRinging();
     } catch (err) {
       console.warn("[LiveNotif] Poll error:", err);
     }
@@ -141,8 +138,8 @@ export function LiveNotificationListener() {
     // Poll immediately on mount
     poll();
 
-    // Then every 5 seconds
-    const id = setInterval(poll, 5000);
+    // Then every 10 seconds to keep reminding them of unread notifications
+    const id = setInterval(poll, 10000);
 
     // Also poll when tab becomes visible (mobile Chrome throttles setInterval)
     const onVisible = () => {
@@ -163,13 +160,23 @@ export function LiveNotificationListener() {
   const dismiss = useCallback(() => {
     setAlert(null);
     stopRinging();
+    // Use a short delay before allowing next alert so they aren't instantly bombarded
+    setTimeout(() => {
+      isAlertingRef.current = false;
+    }, 2000);
   }, []);
 
   const viewDetails = useCallback(() => {
+    const navType = alert?.type;
     setAlert(null);
     stopRinging();
-    navigate("/bookings");
-  }, [navigate]);
+    isAlertingRef.current = false;
+    
+    // Route to the correct page based on type
+    if (navType === "contact") navigate("/contact");
+    else if (navType === "rental") navigate("/equipment");
+    else navigate("/bookings");
+  }, [navigate, alert]);
 
   // ─── Render ──────────────────────────────────────────────
   return (
@@ -235,7 +242,7 @@ export function LiveNotificationListener() {
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-4 text-[15px] font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:bg-primary/90 active:scale-[0.97]"
                 >
                   <CalendarCheck className="h-5 w-5" />
-                  View Booking
+                  View Details
                 </button>
                 <button
                   onClick={dismiss}

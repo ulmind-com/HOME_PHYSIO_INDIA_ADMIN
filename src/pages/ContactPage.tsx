@@ -119,7 +119,7 @@ export function ContactPage() {
                       </span>
                     </div>
                     <p className="truncate text-xs font-medium text-foreground">
-                      {m.subject ?? "No subject"}
+                      {m.service_required ?? m.subject ?? "General Enquiry"}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">{m.message}</p>
                   </div>
@@ -170,9 +170,14 @@ export function ContactPage() {
                       <Phone className="h-4 w-4" /> {active.phone}
                     </span>
                   )}
+                  {active.patient_location && (
+                    <span className="flex items-center gap-1.5 bg-muted px-2 py-0.5 rounded-full text-xs text-foreground/80">
+                      Location: {active.patient_location}
+                    </span>
+                  )}
                 </div>
-                {active.subject && (
-                  <h3 className="text-lg font-semibold">{active.subject}</h3>
+                {(active.service_required || active.subject) && (
+                  <h3 className="text-lg font-semibold">{active.service_required ?? active.subject}</h3>
                 )}
                 <p className="whitespace-pre-wrap leading-relaxed text-foreground">
                   {active.message}
@@ -181,7 +186,7 @@ export function ContactPage() {
 
               <div className="flex flex-wrap items-center gap-2 border-t border-border bg-muted/30 p-4">
                 <Button asChild>
-                  <a href={`mailto:${active.email}?subject=Re: ${active.subject ?? "Your enquiry"}`}>
+                  <a href={`mailto:${active.email}?subject=Re: ${active.service_required ?? active.subject ?? "Your enquiry"}`}>
                     <Reply /> Reply by email
                   </a>
                 </Button>

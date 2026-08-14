@@ -215,7 +215,7 @@ export function DashboardPage() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">{c.name}</p>
                         <p className="truncate text-xs text-muted-foreground">
-                          {c.subject ?? c.message}
+                          {c.service_required ?? c.subject ?? c.message}
                         </p>
                       </div>
                       <span className="shrink-0 text-xs text-muted-foreground">

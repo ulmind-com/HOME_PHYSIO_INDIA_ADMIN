@@ -196,6 +196,12 @@ export interface JobApplication extends BaseDoc {
   email: string;
   phone: string;
   experience?: string | null;
+  preferred_location?: string | null;
+  qualification?: string | null;
+  preferred_duty?: string | null;
+  previous_employer?: string | null;
+  relevant_skills?: string | null;
+  certificates?: string | null;
   cover_letter?: string | null;
   resume?: FileAsset | null;
   status: ApplicationStatus;
@@ -257,6 +263,8 @@ export interface ContactMessage extends BaseDoc {
   email: string;
   phone?: string | null;
   subject?: string | null;
+  service_required?: string | null;
+  patient_location?: string | null;
   message: string;
   status: ContactStatus;
   admin_notes?: string | null;

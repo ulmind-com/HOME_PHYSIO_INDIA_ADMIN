@@ -240,12 +240,46 @@ export function ApplicationsPage() {
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-muted-foreground" /> {selected.phone}
                 </div>
+                {selected.qualification && (
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Qualification</p>
+                    <p className="text-sm">{selected.qualification}</p>
+                  </div>
+                )}
                 {selected.experience && (
                   <div>
-                    <p className="mb-1 text-xs font-medium text-muted-foreground">
-                      Experience
-                    </p>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Experience</p>
                     <p className="text-sm">{selected.experience}</p>
+                  </div>
+                )}
+                {selected.preferred_duty && (
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Preferred Duty</p>
+                    <p className="text-sm">{selected.preferred_duty}</p>
+                  </div>
+                )}
+                {selected.preferred_location && (
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Preferred Location</p>
+                    <p className="text-sm">{selected.preferred_location}</p>
+                  </div>
+                )}
+                {selected.previous_employer && (
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Previous Employer</p>
+                    <p className="text-sm">{selected.previous_employer}</p>
+                  </div>
+                )}
+                {selected.relevant_skills && (
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Relevant Skills</p>
+                    <p className="whitespace-pre-wrap text-sm">{selected.relevant_skills}</p>
+                  </div>
+                )}
+                {selected.certificates && (
+                  <div>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Certificates</p>
+                    <p className="whitespace-pre-wrap text-sm">{selected.certificates}</p>
                   </div>
                 )}
                 {selected.cover_letter && (
