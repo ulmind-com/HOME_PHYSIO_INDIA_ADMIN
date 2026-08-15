@@ -155,6 +155,29 @@ function WebsiteForm({ canEdit }: { canEdit: boolean }) {
                 <Input type="text" {...register("theme_accent")} disabled={!canEdit} placeholder="#3b82f6" />
               </div>
             </Field>
+            <Field label="Font family">
+              <select
+                {...register("font_family")}
+                disabled={!canEdit}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Default (Outfit)</option>
+                <option value="Inter">Inter</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Poppins">Poppins</option>
+                <option value="Outfit">Outfit</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Nunito">Nunito</option>
+                <option value="Open Sans">Open Sans</option>
+                <option value="Lato">Lato</option>
+                <option value="Raleway">Raleway</option>
+                <option value="Source Sans 3">Source Sans 3</option>
+                <option value="DM Sans">DM Sans</option>
+                <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                <option value="Manrope">Manrope</option>
+                <option value="Urbanist">Urbanist</option>
+              </select>
+            </Field>
             <Field label="Email">
               <Input type="email" {...register("email")} disabled={!canEdit} />
             </Field>
