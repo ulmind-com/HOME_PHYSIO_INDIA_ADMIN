@@ -63,6 +63,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "Services", to: "/services", icon: Stethoscope, permission: "services:view" },
       { label: "Medical Equipment", to: "/equipment", icon: Package, permission: "equipment:view" },
       { label: "Careers", to: "/careers", icon: Briefcase, permission: "careers:view" },
+      { label: "Our Staff", to: "/staff", icon: Users, permission: "staff:view" },
     ],
   },
   {

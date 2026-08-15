@@ -4,6 +4,7 @@ import { servicesConfig } from "@/config/resources/services.config";
 import { equipmentConfig } from "@/config/resources/equipment.config";
 import { blogsConfig } from "@/config/resources/blogs.config";
 import { careersConfig } from "@/config/resources/careers.config";
+import { staffConfig } from "@/config/resources/staff.config";
 import {
   faqsConfig,
   testimonialsConfig,
@@ -18,3 +19,4 @@ export const CareersPage = () => <ResourceView config={careersConfig} />;
 export const VideosPage = () => <ResourceView config={videosConfig} />;
 export const TestimonialsPage = () => <ResourceView config={testimonialsConfig} />;
 export const FaqPage = () => <ResourceView config={faqsConfig} />;
+export const StaffPage = () => <ResourceView config={staffConfig} />;

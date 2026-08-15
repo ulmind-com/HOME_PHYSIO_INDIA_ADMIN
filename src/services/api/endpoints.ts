@@ -59,6 +59,7 @@ export const endpoints = {
   videos: { root: "/videos" },
   testimonials: { root: "/testimonials" },
   faqs: { root: "/faqs" },
+  staff: { root: "/staff" },
   contact: { root: "/contact" },
   settings: {
     website: "/settings",

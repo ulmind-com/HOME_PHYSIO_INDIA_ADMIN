@@ -12,6 +12,7 @@ import {
   VideosPage,
   TestimonialsPage,
   FaqPage,
+  StaffPage,
 } from "@/pages/resource-pages";
 import { BookingsPage } from "@/pages/bookings/BookingsPage";
 import { ComprehensiveBookingsPage } from "@/pages/bookings/ComprehensiveBookingsPage";
@@ -46,6 +47,7 @@ export function AppRoutes() {
           <Route path="/equipment" element={<EquipmentPage />} />
           <Route path="/rentals" element={<RentalsPage />} />
           <Route path="/careers" element={<CareersPage />} />
+          <Route path="/staff" element={<StaffPage />} />
           <Route path="/applications" element={<ApplicationsPage />} />
           <Route path="/blogs" element={<BlogsPage />} />
           <Route path="/videos" element={<VideosPage />} />
