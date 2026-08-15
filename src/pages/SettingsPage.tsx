@@ -890,16 +890,7 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                         <Label className="text-xs">Description</Label>
                         <Input {...register(`home_about_tiles.${i}.description` as const)} disabled={!canEdit} />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                          <Label className="text-xs">CTA Label</Label>
-                          <Input {...register(`home_about_tiles.${i}.cta_label` as const)} disabled={!canEdit} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label className="text-xs">CTA Link</Label>
-                          <Input {...register(`home_about_tiles.${i}.cta_link` as const)} disabled={!canEdit} />
-                        </div>
-                      </div>
+
                     </div>
                     {canEdit && (
                       <Button
