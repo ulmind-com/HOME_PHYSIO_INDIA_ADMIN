@@ -12,7 +12,7 @@ interface ImageUploadProps {
   onChange: (asset: ImageAsset | null) => void;
   folder?: string;
   className?: string;
-  aspect?: "square" | "video" | "wide";
+  aspect?: "square" | "video" | "wide" | "portrait";
 }
 
 export function ImageUpload({
@@ -54,7 +54,9 @@ export function ImageUpload({
       ? "aspect-square"
       : aspect === "wide"
         ? "aspect-[3/1]"
-        : "aspect-video";
+        : aspect === "portrait"
+          ? "aspect-[9/16]"
+          : "aspect-video";
 
   if (value?.url) {
     return (

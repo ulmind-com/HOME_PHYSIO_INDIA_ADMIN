@@ -48,8 +48,16 @@ export const categoriesConfig: ResourceConfig<Category> = {
     { name: "name", label: "Name", type: "text", required: true, placeholder: "e.g. Elder Care" },
     { name: "description", label: "Description", type: "textarea", placeholder: "Short description of the category" },
     { name: "image", label: "Image", type: "image", folder: "nupun/categories" },
-    { name: "hero_image", label: "Hero Banner", type: "image", folder: "nupun/categories/hero" },
     { name: "order", label: "Display order", type: "number", defaultValue: 0 },
     { name: "is_active", label: "Is Active", type: "switch", defaultValue: true },
+    
+    // --- Hero Section ---
+    { name: "hero_section", type: "divider", label: "Hero Section", description: "Manage the hero banner on the category's dedicated page." },
+    { name: "hero_badge", label: "Eyebrow Badge", type: "text", placeholder: "e.g. Skilled Nursing Care at Home" },
+    { name: "hero_title", label: "Title", type: "text", placeholder: "e.g. Professional Nursing Support" },
+    { name: "hero_description", label: "Description", type: "textarea", placeholder: "Hero description..." },
+    { name: "hero_cta_primary_text", label: "Primary Button Text", type: "text", placeholder: "e.g. Book a Nurse" },
+    { name: "hero_cta_secondary_text", label: "Secondary Button Text", type: "text", placeholder: "e.g. Call Now" },
+    { name: "hero_image", label: "Hero Banner", type: "image", folder: "nupun/categories/hero" },
   ],
 };

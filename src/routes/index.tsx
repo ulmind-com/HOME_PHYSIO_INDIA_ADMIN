@@ -24,6 +24,9 @@ import { ContactPage } from "@/pages/ContactPage";
 import { MediaLibraryPage } from "@/pages/MediaLibraryPage";
 import { SeoPage } from "@/pages/SeoPage";
 import { SettingsPage } from "@/pages/SettingsPage";
+import { CategoryHeroesPage } from "@/pages/CategoryHeroesPage";
+import { AboutPageManager } from "@/pages/AboutPageManager";
+import { ComprehensiveServicesPage } from "@/pages/ComprehensiveServicesPage";
 import { UsersPage } from "@/pages/UsersPage";
 import { RolesPage } from "@/pages/RolesPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
@@ -58,6 +61,9 @@ export function AppRoutes() {
           <Route path="/media" element={<MediaLibraryPage />} />
           <Route path="/seo" element={<SeoPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/category-heroes" element={<CategoryHeroesPage />} />
+          <Route path="/about-page" element={<AboutPageManager />} />
+          <Route path="/comprehensive-services-manager" element={<ComprehensiveServicesPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/roles" element={<RolesPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />

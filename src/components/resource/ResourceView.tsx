@@ -73,6 +73,7 @@ export function ResourceView<T extends { id: string }>({
       page_size: pageSize,
       search: search || undefined,
       sort_by: config.defaultSort,
+      sort_order: config.defaultSort === "order" ? "asc" : "desc",
       ...filters,
     }),
     [page, pageSize, search, filters, config.defaultSort]

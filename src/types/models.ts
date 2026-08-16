@@ -82,7 +82,15 @@ export interface Category extends BaseDoc {
   description: string;
   icon?: string | null;
   image?: ImageAsset | null;
+  hero_badge?: string | null;
+  hero_title?: string | null;
+  hero_description?: string | null;
+  hero_cta_primary_text?: string | null;
+  hero_cta_secondary_text?: string | null;
   hero_image?: ImageAsset | null;
+  hero_images?: ImageAsset[];
+  hero_images_mobile?: ImageAsset[];
+  hero_stats?: HeroStat[];
   order: number;
   is_active: boolean;
 }
@@ -298,11 +306,30 @@ export interface HeroStat {
   label: string;
 }
 
+export interface FounderCard {
+  name: string;
+  role: string;
+  image?: ImageAsset | null;
+  description: string;
+  address?: string | null;
+}
+
+export interface HeroSlide {
+  title?: string | null;
+  subtitle?: string | null;
+  button_text?: string | null;
+  button_link?: string | null;
+  image_desktop?: ImageAsset | null;
+  image_mobile?: ImageAsset | null;
+  order: number;
+}
+
 export interface ServicesHero {
   title?: string | null;
   subtitle?: string | null;
   background_image?: ImageAsset | null;
   stats?: HeroStat[];
+  slides?: HeroSlide[];
 }
 
 export interface HomeHeroStat {
@@ -409,6 +436,11 @@ export interface WebsiteSettings extends BaseDoc {
   about_values?: ValueItem[];
   about_commitments?: string[];
   commitment_image?: ImageAsset | null;
+  about_founders?: FounderCard[];
+  about_address_name?: string | null;
+  about_address_line1?: string | null;
+  about_address_line2?: string | null;
+  about_map_embed_url?: string | null;
   about_welcome_title?: string | null;
   about_welcome_description?: string | null;
   about_welcome_image?: ImageAsset | null;

@@ -35,6 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageUpload } from "@/components/common/ImageUpload";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export function SettingsPage() {
   const { hasPermission } = useAuth();
@@ -252,18 +253,15 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
   });
 
   const { register, handleSubmit, reset, control } = useForm<HeroFormValues>({
-    defaultValues: { services_hero: { title: "", subtitle: "", background_image: null, stats: [] } },
+    defaultValues: { services_hero: { slides: [] } },
   });
-  const { fields, append, remove } = useFieldArray({ control, name: "services_hero.stats" });
+  const { fields, append, remove, move } = useFieldArray({ control, name: "services_hero.slides" });
 
   useEffect(() => {
     if (data) {
       reset({
         services_hero: {
-          title: data.services_hero?.title ?? "",
-          subtitle: data.services_hero?.subtitle ?? "",
-          background_image: data.services_hero?.background_image ?? null,
-          stats: data.services_hero?.stats ?? [],
+          slides: data.services_hero?.slides ?? [],
         },
       });
     }
@@ -291,73 +289,108 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <Field label="Heading">
-            <Input
-              placeholder="Trusted Home Healthcare Services in Gurgaon & Delhi NCR"
-              {...register("services_hero.title")}
-              disabled={!canEdit}
-            />
-          </Field>
-          <Field label="Subtitle">
-            <Textarea
-              rows={3}
-              placeholder="Compassionate and reliable home healthcare for seniors, patients and recovering individuals…"
-              {...register("services_hero.subtitle")}
-              disabled={!canEdit}
-            />
-          </Field>
-          <Field label="Background image">
-            <Controller
-              control={control}
-              name="services_hero.background_image"
-              render={({ field }) => (
-                <ImageUpload
-                  value={field.value ?? undefined}
-                  onChange={field.onChange}
-                  folder="nupun/hero"
-                  aspect="wide"
-                />
-              )}
-            />
-          </Field>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Highlight stats</Label>
-              {canEdit && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => append({ value: "", label: "" })}
-                >
-                  <Plus className="h-4 w-4" /> Add stat
-                </Button>
-              )}
-            </div>
-            {fields.length === 0 && (
-              <p className="text-sm text-muted-foreground">No stats yet. Add up to four (e.g. “24/7” → “Patient Support”).</p>
+          <div className="flex items-center justify-between mb-4">
+            <Label className="text-base font-semibold">Hero Slides</Label>
+            {canEdit && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append({ title: "", subtitle: "", button_text: "", button_link: "", image_desktop: null, image_mobile: null, order: fields.length })}
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add Slide
+              </Button>
             )}
-            <div className="space-y-3">
-              {fields.map((f, i) => (
-                <div key={f.id} className="flex items-end gap-3">
-                  <div className="w-32 space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Value</Label>
-                    <Input placeholder="24/7" {...register(`services_hero.stats.${i}.value` as const)} disabled={!canEdit} />
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Label</Label>
-                    <Input placeholder="Patient Support" {...register(`services_hero.stats.${i}.label` as const)} disabled={!canEdit} />
-                  </div>
-                  {canEdit && (
-                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
+
+          {fields.length === 0 && (
+            <div className="text-center p-6 border rounded-lg bg-muted/50 border-dashed">
+              <p className="text-sm text-muted-foreground">No slides configured. Add your first slide above.</p>
+            </div>
+          )}
+
+          {fields.length > 0 && (
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              {fields.map((f, i) => (
+                <AccordionItem key={f.id} value={`slide-${i}`} className="border rounded-xl bg-card px-4">
+                  <div className="flex items-center justify-between w-full">
+                    <AccordionTrigger className="hover:no-underline flex-1 text-sm font-semibold py-4">
+                      {f.title || `Slide ${i + 1}`}
+                    </AccordionTrigger>
+                    {canEdit && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 ml-2 hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          remove(i);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <AccordionContent className="pt-2 pb-4 space-y-6">
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <Field label="Heading">
+                        <Input placeholder="E.g., Expert Home Nursing Care" {...register(`services_hero.slides.${i}.title` as const)} disabled={!canEdit} />
+                      </Field>
+                      <Field label="Button Text">
+                        <Input placeholder="E.g., Book a Nurse" {...register(`services_hero.slides.${i}.button_text` as const)} disabled={!canEdit} />
+                      </Field>
+                    </div>
+                    
+                    <Field label="Description">
+                      <Textarea
+                        rows={2}
+                        placeholder="Compassionate and reliable home healthcare..."
+                        {...register(`services_hero.slides.${i}.subtitle` as const)}
+                        disabled={!canEdit}
+                      />
+                    </Field>
+
+                    <Field label="Button Link">
+                      <Input placeholder="E.g., /services/home-nursing-care" {...register(`services_hero.slides.${i}.button_link` as const)} disabled={!canEdit} />
+                    </Field>
+
+                    <div className="grid gap-5 sm:grid-cols-2 mt-2">
+                      <Field label="Desktop Image (16:9)">
+                        <Controller
+                          control={control}
+                          name={`services_hero.slides.${i}.image_desktop`}
+                          render={({ field }) => (
+                            <ImageUpload
+                              value={field.value ?? undefined}
+                              onChange={field.onChange}
+                              folder="nupun/hero"
+                              aspect="wide"
+                            />
+                          )}
+                        />
+                      </Field>
+                      <Field label="Mobile Image (9:16)">
+                        <Controller
+                          control={control}
+                          name={`services_hero.slides.${i}.image_mobile`}
+                          render={({ field }) => (
+                            <ImageUpload
+                              value={field.value ?? undefined}
+                              onChange={field.onChange}
+                              folder="nupun/hero"
+                              aspect="portrait"
+                            />
+                          )}
+                        />
+                      </Field>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
         </CardContent>
         {canEdit && (
           <div className="flex justify-end border-t border-border bg-muted/30 px-6 py-4">
@@ -376,6 +409,8 @@ type HomeHeroFormValues = {
   hero_headline: string;
   hero_subtitle: string;
   hero_description: string;
+  hero_cta_primary_text: string;
+  hero_cta_secondary_text: string;
 };
 
 function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
@@ -387,14 +422,17 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
 
   const { register, handleSubmit, reset, control } = useForm<HomeHeroFormValues>({
     defaultValues: { 
-      home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [], stats: [] },
+      home_hero: { trust_badge_text: "", trust_badge_quote: "", trust_badge_avatars: [], slider_images: [], slider_images_mobile: [], stats: [] },
       hero_headline: "",
       hero_subtitle: "",
       hero_description: "",
+      hero_cta_primary_text: "",
+      hero_cta_secondary_text: "",
     },
   });
   const avatarsField = useFieldArray({ control, name: "home_hero.trust_badge_avatars" });
   const sliderField = useFieldArray({ control, name: "home_hero.slider_images" });
+  const sliderMobileField = useFieldArray({ control, name: "home_hero.slider_images_mobile" });
   const statsField = useFieldArray({ control, name: "home_hero.stats" });
 
   useEffect(() => {
@@ -405,11 +443,14 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
           trust_badge_quote: data.home_hero?.trust_badge_quote ?? "",
           trust_badge_avatars: data.home_hero?.trust_badge_avatars ?? [],
           slider_images: data.home_hero?.slider_images ?? [],
+          slider_images_mobile: data.home_hero?.slider_images_mobile ?? [],
           stats: data.home_hero?.stats ?? [],
         },
         hero_headline: data.hero_headline ?? "",
         hero_subtitle: data.hero_subtitle ?? "",
         hero_description: data.hero_description ?? "",
+        hero_cta_primary_text: data.hero_cta_primary_text ?? "",
+        hero_cta_secondary_text: data.hero_cta_secondary_text ?? "",
       });
     }
   }, [data, reset]);
@@ -430,13 +471,15 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
       home_hero: v.home_hero,
       hero_headline: v.hero_headline,
       hero_subtitle: v.hero_subtitle,
-      hero_description: v.hero_description
+      hero_description: v.hero_description,
+      hero_cta_primary_text: v.hero_cta_primary_text,
+      hero_cta_secondary_text: v.hero_cta_secondary_text,
     }))}>
       <Card>
         <CardHeader>
           <CardTitle>Home page hero</CardTitle>
           <CardDescription>
-            Manage the hero text content, background slider images and the floating Trust Badge details.
+            Manage the hero text content, CTA buttons, background slider images (desktop & mobile) and the floating Trust Badge details.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -465,9 +508,35 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
             </Field>
           </div>
 
+          {/* ── CTA Button Text ── */}
+          <div className="space-y-4 pt-2 pb-6 border-b">
+            <h3 className="font-semibold text-lg">CTA Buttons</h3>
+            <p className="text-sm text-muted-foreground">Customise the text shown on the hero call-to-action buttons.</p>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field label="Primary Button Text">
+                <Input
+                  placeholder="Book Trusted Care"
+                  {...register("hero_cta_primary_text")}
+                  disabled={!canEdit}
+                />
+              </Field>
+              <Field label="Secondary Button Text">
+                <Input
+                  placeholder="WhatsApp Us"
+                  {...register("hero_cta_secondary_text")}
+                  disabled={!canEdit}
+                />
+              </Field>
+            </div>
+          </div>
+
+          {/* ── Desktop Slider Images (16:9) ── */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Slider Images</Label>
+              <div>
+                <Label>Desktop Slider Images (16:9)</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">Shown on desktops and tablets. Use landscape/wide images.</p>
+              </div>
               {canEdit && (
                 <Button
                   type="button"
@@ -504,6 +573,58 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
                       size="icon"
                       className="absolute -top-2 -right-2 w-7 h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                       onClick={() => sliderField.remove(i)}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Mobile Slider Images (9:16) ── */}
+          <div className="space-y-3 pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Mobile Slider Images (9:16)</Label>
+                <p className="text-xs text-muted-foreground mt-0.5">Shown on mobile phones. Use portrait/vertical images for best results.</p>
+              </div>
+              {canEdit && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => sliderMobileField.append({ url: "" })}
+                >
+                  <Plus className="h-4 w-4" /> Add Mobile Image
+                </Button>
+              )}
+            </div>
+            {sliderMobileField.fields.length === 0 && (
+              <p className="text-sm text-muted-foreground">No mobile images uploaded. Desktop images will be used on mobile as fallback.</p>
+            )}
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {sliderMobileField.fields.map((f, i) => (
+                <div key={f.id} className="relative group">
+                  <Controller
+                    control={control}
+                    name={`home_hero.slider_images_mobile.${i}`}
+                    render={({ field }) => (
+                      <ImageUpload
+                        value={field.value ?? undefined}
+                        onChange={field.onChange}
+                        folder="nupun/hero/mobile"
+                        aspect="portrait"
+                      />
+                    )}
+                  />
+                  {canEdit && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 w-7 h-7 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => sliderMobileField.remove(i)}
                     >
                       <Trash2 className="w-3 h-3" />
                     </Button>
@@ -1004,6 +1125,40 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Why Choose Section Header */}
+          <div className="space-y-4 pt-4 border-t border-border">
+            <Label className="text-base font-semibold">Why Choose / Commitment Section (Homepage)</Label>
+            <p className="text-xs text-muted-foreground">Section header, commitment items, team image, and floating badge on the homepage.</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Eyebrow Badge</Label>
+                <Input {...register("why_choose_eyebrow")} placeholder="Our Promise" disabled={!canEdit} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Section Title</Label>
+                <Input {...register("why_choose_title")} placeholder="Why Choose Nupun Home Care?" disabled={!canEdit} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Section Description</Label>
+              <Input {...register("why_choose_description")} placeholder="We go beyond standard care..." disabled={!canEdit} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Commitment Subtitle</Label>
+              <Input {...register("commitment_subtitle")} placeholder="Our Commitment to Excellence" disabled={!canEdit} />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Floating Badge Value</Label>
+                <Input {...register("commitment_badge_value")} placeholder="100%" disabled={!canEdit} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Floating Badge Label</Label>
+                <Input {...register("commitment_badge_label")} placeholder="Verified Staff" disabled={!canEdit} />
+              </div>
             </div>
           </div>
 
