@@ -131,7 +131,7 @@ function ServiceCardEditor({
   isFirst: boolean;
   isLast: boolean;
 }) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
