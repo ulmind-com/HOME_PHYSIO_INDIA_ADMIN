@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn, formatCompact } from "@/lib/utils";
 
@@ -9,6 +10,7 @@ interface StatCardProps {
   hint?: string;
   tone?: "primary" | "success" | "warning" | "danger" | "accent";
   index?: number;
+  to?: string;
 }
 
 const TONES: Record<string, string> = {
@@ -26,8 +28,9 @@ export function StatCard({
   hint,
   tone = "primary",
   index = 0,
+  to,
 }: StatCardProps) {
-  return (
+  const CardContent = (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
@@ -57,4 +60,14 @@ export function StatCard({
       </div>
     </motion.div>
   );
+
+  if (to) {
+    return (
+      <Link to={to} className="block">
+        {CardContent}
+      </Link>
+    );
+  }
+
+  return CardContent;
 }

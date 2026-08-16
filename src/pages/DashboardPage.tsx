@@ -72,14 +72,14 @@ export function DashboardPage() {
 
   const cards = stats
     ? [
-        { label: "Total Bookings", value: stats.bookings.total, icon: <CalendarCheck />, tone: "primary" as const, hint: `${stats.bookings.pending} pending` },
-        { label: "Pending Bookings", value: stats.bookings.pending, icon: <Clock />, tone: "warning" as const, hint: "Awaiting review" },
-        { label: "Completed", value: stats.bookings.completed, icon: <CheckCircle2 />, tone: "success" as const, hint: "Fulfilled bookings" },
-        { label: "Services", value: stats.services, icon: <Stethoscope />, tone: "accent" as const },
-        { label: "Rental Requests", value: stats.rentals, icon: <ClipboardList />, tone: "primary" as const },
-        { label: "Applications", value: stats.applications, icon: <FileUser />, tone: "accent" as const },
-        { label: "New Messages", value: stats.new_contacts, icon: <Mail />, tone: "warning" as const },
-        { label: "Blog Posts", value: stats.blogs, icon: <Newspaper />, tone: "success" as const },
+        { label: "Total Bookings", value: stats.bookings.total, icon: <CalendarCheck />, tone: "primary" as const, hint: `${stats.bookings.pending} pending`, to: "/bookings" },
+        { label: "Pending Bookings", value: stats.bookings.pending, icon: <Clock />, tone: "warning" as const, hint: "Awaiting review", to: "/bookings" },
+        { label: "Completed", value: stats.bookings.completed, icon: <CheckCircle2 />, tone: "success" as const, hint: "Fulfilled bookings", to: "/bookings" },
+        { label: "Services", value: stats.services, icon: <Stethoscope />, tone: "accent" as const, to: "/services" },
+        { label: "Rental Requests", value: stats.rentals, icon: <ClipboardList />, tone: "primary" as const, to: "/rentals" },
+        { label: "Applications", value: stats.applications, icon: <FileUser />, tone: "accent" as const, to: "/applications" },
+        { label: "New Messages", value: stats.new_contacts, icon: <Mail />, tone: "warning" as const, to: "/contact" },
+        { label: "Blog Posts", value: stats.blogs, icon: <Newspaper />, tone: "success" as const, to: "/blogs" },
       ]
     : [];
 
