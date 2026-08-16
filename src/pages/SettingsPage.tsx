@@ -649,29 +649,50 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
             {statsField.fields.length === 0 && (
               <p className="text-sm text-muted-foreground mb-4">No stats added yet. Add up to 3 stats (e.g. 100+ Verified Caregivers).</p>
             )}
-            <div className="space-y-4">
-              {statsField.fields.map((f, i) => (
-                <div key={f.id} className="flex flex-wrap items-end gap-3 p-4 border rounded-lg bg-muted/10 relative group">
-                  <div className="w-24 space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Value (Number)</Label>
-                    <Input type="number" placeholder="100" {...register(`home_hero.stats.${i}.value` as const, { valueAsNumber: true })} disabled={!canEdit} />
-                  </div>
-                  <div className="w-24 space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Suffix</Label>
-                    <Input placeholder="+" {...register(`home_hero.stats.${i}.suffix` as const)} disabled={!canEdit} />
-                  </div>
-                  <div className="flex-1 space-y-1.5 min-w-[200px]">
-                    <Label className="text-xs text-muted-foreground">Label</Label>
-                    <Input placeholder="Verified Caregivers" {...register(`home_hero.stats.${i}.label` as const)} disabled={!canEdit} />
-                  </div>
-                  {canEdit && (
-                    <Button type="button" variant="ghost" size="icon" className="text-destructive absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => statsField.remove(i)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {statsField.fields.map((f, i) => {
+                  const currentLabel = statsField.fields[i]?.label;
+                  return (
+                    <AccordionItem key={f.id} value={`stat-${f.id}`} className="border rounded-lg bg-muted/10 px-4">
+                      <div className="flex items-center justify-between w-full group">
+                        <AccordionTrigger className="hover:no-underline flex-1 py-4 text-sm font-semibold">
+                          Stat {i + 1} {currentLabel ? `— ${currentLabel}` : ""}
+                        </AccordionTrigger>
+                        {canEdit && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 z-10"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              statsField.remove(i);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                      <AccordionContent className="pb-4">
+                        <div className="flex flex-wrap items-end gap-3 pt-2">
+                          <div className="w-24 space-y-1.5">
+                            <Label className="text-xs text-muted-foreground">Value (Number)</Label>
+                            <Input type="number" placeholder="100" {...register(`home_hero.stats.${i}.value` as const, { valueAsNumber: true })} disabled={!canEdit} />
+                          </div>
+                          <div className="w-24 space-y-1.5">
+                            <Label className="text-xs text-muted-foreground">Suffix</Label>
+                            <Input placeholder="+" {...register(`home_hero.stats.${i}.suffix` as const)} disabled={!canEdit} />
+                          </div>
+                          <div className="flex-1 space-y-1.5 min-w-[200px]">
+                            <Label className="text-xs text-muted-foreground">Label</Label>
+                            <Input placeholder="Verified Caregivers" {...register(`home_hero.stats.${i}.label` as const)} disabled={!canEdit} />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
           </div>
 
           <div className="pt-6 border-t">
@@ -911,71 +932,83 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
               )}
             </div>
             <div className="space-y-4">
-              {featuresField.fields.map((f, i) => (
-                <div key={f.id} className="p-4 border rounded-lg bg-muted/10 space-y-3">
-                  <div className="flex gap-3 items-start">
-                    <div className="flex flex-col gap-1 mt-1">
-                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => swap(i, "up")}><MoveUp className="h-4 w-4" /></Button>
-                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => swap(i, "down")}><MoveDown className="h-4 w-4" /></Button>
-                    </div>
-                    <div className="w-32 shrink-0 space-y-1.5">
-                      <Label className="text-xs">Icon Image (PNG)</Label>
-                      <Controller
-                        control={control}
-                        name={`home_about_features.${i}.icon_image` as const}
-                        render={({ field }) => (
-                          <ImageUpload
-                            value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
-                            onChange={field.onChange}
-                          />
-                        )}
-                      />
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <div className="flex gap-3 items-end">
-                        <div className="flex-1 space-y-1.5">
-                          <Label className="text-xs">Title</Label>
-                          <Input {...register(`home_about_features.${i}.title` as const)} disabled={!canEdit} />
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {featuresField.fields.map((f, i) => {
+                  const currentTitle = featuresField.fields[i]?.title;
+                  return (
+                    <AccordionItem key={f.id} value={`feature-${f.id}`} className="border rounded-lg bg-muted/10 px-4">
+                      <div className="flex items-center gap-2 w-full group">
+                        <div className="flex flex-col">
+                           <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.preventDefault(); swap(i, "up"); }}><MoveUp className="h-3 w-3" /></Button>
+                           <Button variant="ghost" size="icon" className="h-5 w-5" onClick={(e) => { e.preventDefault(); swap(i, "down"); }}><MoveDown className="h-3 w-3" /></Button>
                         </div>
-                        <div className="w-36 space-y-1.5">
-                          <Label className="text-xs">Fallback Icon</Label>
-                          <Controller
-                            control={control}
-                            name={`home_about_features.${i}.icon` as const}
-                            render={({ field }) => (
-                              <select
-                                className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
-                                value={field.value || "heart-pulse"}
-                                onChange={field.onChange}
-                                disabled={!canEdit}
-                              >
-                                {ICON_OPTIONS.map((opt) => (
-                                  <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                  </option>
-                                ))}
-                              </select>
-                            )}
-                          />
-                        </div>
+                        <AccordionTrigger className="hover:no-underline flex-1 py-4 text-sm font-semibold">
+                          Feature {i + 1} {currentTitle ? `— ${currentTitle}` : ""}
+                        </AccordionTrigger>
                         {canEdit && (
-                          <Button type="button" variant="ghost" size="icon" onClick={() => featuresField.remove(i)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                          <Button type="button" variant="ghost" size="icon" onClick={(e) => { e.preventDefault(); featuresField.remove(i); }} className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 z-10">
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Description</Label>
-                        <Textarea
-                          {...register(`home_about_features.${i}.description` as const)}
-                          rows={2}
-                          disabled={!canEdit}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      <AccordionContent className="pb-4">
+                        <div className="flex gap-4 items-start pt-2">
+                          <div className="w-32 shrink-0 space-y-1.5">
+                            <Label className="text-xs">Icon Image (PNG)</Label>
+                            <Controller
+                              control={control}
+                              name={`home_about_features.${i}.icon_image` as const}
+                              render={({ field }) => (
+                                <ImageUpload
+                                  value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
+                                  onChange={field.onChange}
+                                />
+                              )}
+                            />
+                          </div>
+                          <div className="flex-1 space-y-3">
+                            <div className="flex gap-3 items-end">
+                              <div className="flex-1 space-y-1.5">
+                                <Label className="text-xs">Title</Label>
+                                <Input {...register(`home_about_features.${i}.title` as const)} disabled={!canEdit} />
+                              </div>
+                              <div className="w-36 space-y-1.5">
+                                <Label className="text-xs">Fallback Icon</Label>
+                                <Controller
+                                  control={control}
+                                  name={`home_about_features.${i}.icon` as const}
+                                  render={({ field }) => (
+                                    <select
+                                      className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+                                      value={field.value || "heart-pulse"}
+                                      onChange={field.onChange}
+                                      disabled={!canEdit}
+                                    >
+                                      {ICON_OPTIONS.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>
+                                          {opt.label}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  )}
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-xs">Description</Label>
+                              <Textarea
+                                {...register(`home_about_features.${i}.description` as const)}
+                                rows={2}
+                                disabled={!canEdit}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
             </div>
           </div>
 
@@ -1005,55 +1038,69 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
               )}
             </div>
             <div className="space-y-4">
-              {tilesField.fields.map((f, i) => (
-                <div key={f.id} className="p-4 border rounded-lg bg-muted/10 space-y-3">
-                  <div className="flex gap-3 items-start">
-                    <div className="w-48 shrink-0 space-y-1.5">
-                      <Label className="text-xs">Image</Label>
-                      <Controller
-                        control={control}
-                        name={`home_about_tiles.${i}.image` as const}
-                        render={({ field }) => (
-                          <ImageUpload
-                            value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
-                            onChange={field.onChange}
-                            folder="nupun/home-about"
-                            aspect="square"
-                          />
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {tilesField.fields.map((f, i) => {
+                  const currentTitle = tilesField.fields[i]?.title;
+                  return (
+                    <AccordionItem key={f.id} value={`tile-${f.id}`} className="border rounded-lg bg-muted/10 px-4">
+                      <div className="flex items-center justify-between w-full group">
+                        <AccordionTrigger className="hover:no-underline flex-1 py-4 text-sm font-semibold">
+                          Tile {i + 1} {currentTitle ? `— ${currentTitle}` : ""}
+                        </AccordionTrigger>
+                        {canEdit && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 z-10"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              tilesField.remove(i);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         )}
-                      />
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                          <Label className="text-xs">Count (e.g. 120+)</Label>
-                          <Input {...register(`home_about_tiles.${i}.count` as const)} disabled={!canEdit} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label className="text-xs">Title</Label>
-                          <Input {...register(`home_about_tiles.${i}.title` as const)} disabled={!canEdit} />
-                        </div>
                       </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs">Description</Label>
-                        <Input {...register(`home_about_tiles.${i}.description` as const)} disabled={!canEdit} />
-                      </div>
-
-                    </div>
-                    {canEdit && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="mt-6"
-                        onClick={() => tilesField.remove(i)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                      <AccordionContent className="pb-4">
+                        <div className="flex gap-4 items-start pt-2">
+                          <div className="w-48 shrink-0 space-y-1.5">
+                            <Label className="text-xs">Image</Label>
+                            <Controller
+                              control={control}
+                              name={`home_about_tiles.${i}.image` as const}
+                              render={({ field }) => (
+                                <ImageUpload
+                                  value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
+                                  onChange={field.onChange}
+                                  folder="nupun/home-about"
+                                  aspect="square"
+                                />
+                              )}
+                            />
+                          </div>
+                          <div className="flex-1 space-y-3">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="space-y-1.5">
+                                <Label className="text-xs">Count (e.g. 120+)</Label>
+                                <Input {...register(`home_about_tiles.${i}.count` as const)} disabled={!canEdit} />
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label className="text-xs">Title</Label>
+                                <Input {...register(`home_about_tiles.${i}.title` as const)} disabled={!canEdit} />
+                              </div>
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label className="text-xs">Description</Label>
+                              <Input {...register(`home_about_tiles.${i}.description` as const)} disabled={!canEdit} />
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
             </div>
           </div>
         </CardContent>
@@ -1112,23 +1159,46 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
               )}
             </div>
             <div className="space-y-4">
-              {whyChooseField.fields.map((f, i) => (
-                <div key={f.id} className="flex gap-3 items-end p-3 border rounded-lg bg-muted/10">
-                  <div className="w-1/3 space-y-1.5">
-                    <Label className="text-xs">Title</Label>
-                    <Input {...register(`why_choose_items.${i}.title` as const)} disabled={!canEdit} />
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    <Label className="text-xs">Detail / Description</Label>
-                    <Input {...register(`why_choose_items.${i}.detail` as const)} disabled={!canEdit} />
-                  </div>
-                  {canEdit && (
-                    <Button type="button" variant="ghost" size="icon" onClick={() => whyChooseField.remove(i)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {whyChooseField.fields.map((f, i) => {
+                  const currentTitle = whyChooseField.fields[i]?.title;
+                  return (
+                    <AccordionItem key={f.id} value={`why-${f.id}`} className="border rounded-lg bg-muted/10 px-4">
+                      <div className="flex items-center justify-between w-full group">
+                        <AccordionTrigger className="hover:no-underline flex-1 py-4 text-sm font-semibold">
+                          Reason {i + 1} {currentTitle ? `— ${currentTitle}` : ""}
+                        </AccordionTrigger>
+                        {canEdit && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 z-10"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              whyChooseField.remove(i);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                      <AccordionContent className="pb-4">
+                        <div className="flex gap-3 items-end pt-2">
+                          <div className="w-1/3 space-y-1.5">
+                            <Label className="text-xs">Title</Label>
+                            <Input {...register(`why_choose_items.${i}.title` as const)} disabled={!canEdit} />
+                          </div>
+                          <div className="flex-1 space-y-1.5">
+                            <Label className="text-xs">Detail / Description</Label>
+                            <Input {...register(`why_choose_items.${i}.detail` as const)} disabled={!canEdit} />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
             </div>
           </div>
 

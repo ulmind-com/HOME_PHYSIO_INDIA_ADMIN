@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageUpload } from "@/components/common/ImageUpload";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 /* ─────── Types ────── */
 
@@ -223,80 +224,92 @@ export function AboutPageManager() {
                   No founder cards added yet. Click "Add Founder" to create one.
                 </p>
               )}
-              {foundersField.fields.map((f, i) => (
-                <div
-                  key={f.id}
-                  className="relative p-6 border rounded-xl bg-muted/10 space-y-5 group"
-                >
-                  {canEdit && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-3 right-3 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => foundersField.remove(i)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-
-                  <div className="flex flex-col md:flex-row gap-6">
-                    {/* Photo */}
-                    <div className="shrink-0 space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Photo</Label>
-                      <div className="w-32 h-32">
-                        <Controller
-                          control={control}
-                          name={`about_founders.${i}.image`}
-                          render={({ field }) => (
-                            <ImageUpload
-                              value={field.value ?? undefined}
-                              onChange={field.onChange}
-                              folder="nupun/about/founders"
-                              aspect="square"
-                            />
-                          )}
-                        />
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {foundersField.fields.map((f, i) => {
+                  const currentName = foundersField.fields[i]?.name;
+                  return (
+                    <AccordionItem key={f.id} value={`founder-${f.id}`} className="relative border rounded-xl bg-muted/10 px-6">
+                      <div className="flex items-center justify-between w-full group">
+                        <AccordionTrigger className="hover:no-underline flex-1 py-5 font-semibold">
+                          Founder {i + 1} {currentName ? `— ${currentName}` : ""}
+                        </AccordionTrigger>
+                        {canEdit && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 z-10"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              foundersField.remove(i);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
-                    </div>
 
-                    {/* Name & Role */}
-                    <div className="flex-1 space-y-4">
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <Field label="Name">
-                          <Input
-                            placeholder="e.g. Sandeep Anand"
-                            {...register(`about_founders.${i}.name` as const)}
-                            disabled={!canEdit}
-                          />
-                        </Field>
-                        <Field label="Role / Title">
-                          <Input
-                            placeholder="e.g. Founder, Nupun Home Health Care"
-                            {...register(`about_founders.${i}.role` as const)}
-                            disabled={!canEdit}
-                          />
-                        </Field>
-                      </div>
-                      <Field label="Description">
-                        <Textarea
-                          rows={4}
-                          placeholder="Background, experience and vision..."
-                          {...register(`about_founders.${i}.description` as const)}
-                          disabled={!canEdit}
-                        />
-                      </Field>
-                      <Field label="Address (optional — shows on map)">
-                        <Input
-                          placeholder="e.g. 5th Floor, Tower-C, Unitech Cyber Park, Gurgaon"
-                          {...register(`about_founders.${i}.address` as const)}
-                          disabled={!canEdit}
-                        />
-                      </Field>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      <AccordionContent className="pb-6">
+                        <div className="flex flex-col md:flex-row gap-6 pt-2">
+                          {/* Photo */}
+                          <div className="shrink-0 space-y-1.5">
+                            <Label className="text-xs text-muted-foreground">Photo</Label>
+                            <div className="w-32 h-32">
+                              <Controller
+                                control={control}
+                                name={`about_founders.${i}.image`}
+                                render={({ field }) => (
+                                  <ImageUpload
+                                    value={field.value ?? undefined}
+                                    onChange={field.onChange}
+                                    folder="nupun/about/founders"
+                                    aspect="square"
+                                  />
+                                )}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Name & Role */}
+                          <div className="flex-1 space-y-4">
+                            <div className="grid gap-4 sm:grid-cols-2">
+                              <Field label="Name">
+                                <Input
+                                  placeholder="e.g. Sandeep Anand"
+                                  {...register(`about_founders.${i}.name` as const)}
+                                  disabled={!canEdit}
+                                />
+                              </Field>
+                              <Field label="Role / Title">
+                                <Input
+                                  placeholder="e.g. Founder, Nupun Home Health Care"
+                                  {...register(`about_founders.${i}.role` as const)}
+                                  disabled={!canEdit}
+                                />
+                              </Field>
+                            </div>
+                            <Field label="Description">
+                              <Textarea
+                                rows={4}
+                                placeholder="Background, experience and vision..."
+                                {...register(`about_founders.${i}.description` as const)}
+                                disabled={!canEdit}
+                              />
+                            </Field>
+                            <Field label="Address (optional — shows on map)">
+                              <Input
+                                placeholder="e.g. 5th Floor, Tower-C, Unitech Cyber Park, Gurgaon"
+                                {...register(`about_founders.${i}.address` as const)}
+                                disabled={!canEdit}
+                              />
+                            </Field>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
             </CardContent>
           </Card>
 

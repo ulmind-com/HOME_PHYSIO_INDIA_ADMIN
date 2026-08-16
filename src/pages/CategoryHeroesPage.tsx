@@ -20,6 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { env } from "@/config/env";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -412,29 +413,46 @@ function CategoryHeroForm({ category, canEdit }: { category: Category; canEdit: 
               </p>
             )}
             <div className="space-y-3">
-              {statsField.fields.map((f, i) => (
-                <div key={f.id} className="flex flex-wrap items-end gap-3 p-4 border rounded-lg bg-muted/10 relative group">
-                  <div className="w-32 space-y-1.5">
-                    <Label className="text-xs text-muted-foreground">Value</Label>
-                    <Input placeholder="250+" {...register(`hero_stats.${i}.value` as const)} disabled={!canEdit} />
-                  </div>
-                  <div className="flex-1 space-y-1.5 min-w-[200px]">
-                    <Label className="text-xs text-muted-foreground">Label</Label>
-                    <Input placeholder="Caregivers" {...register(`hero_stats.${i}.label` as const)} disabled={!canEdit} />
-                  </div>
-                  {canEdit && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="text-destructive absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => statsField.remove(i)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {statsField.fields.map((f, i) => {
+                  const currentLabel = statsField.fields[i]?.label;
+                  return (
+                    <AccordionItem key={f.id} value={`stat-${f.id}`} className="border rounded-lg bg-muted/10 px-4">
+                      <div className="flex items-center justify-between w-full group">
+                        <AccordionTrigger className="hover:no-underline flex-1 py-4 text-sm font-semibold">
+                          Stat {i + 1} {currentLabel ? `— ${currentLabel}` : ""}
+                        </AccordionTrigger>
+                        {canEdit && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 ml-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 z-10"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              statsField.remove(i);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                      <AccordionContent className="pb-4">
+                        <div className="flex flex-wrap items-end gap-3 pt-2">
+                          <div className="w-32 space-y-1.5">
+                            <Label className="text-xs text-muted-foreground">Value</Label>
+                            <Input placeholder="250+" {...register(`hero_stats.${i}.value` as const)} disabled={!canEdit} />
+                          </div>
+                          <div className="flex-1 space-y-1.5 min-w-[200px]">
+                            <Label className="text-xs text-muted-foreground">Label</Label>
+                            <Input placeholder="Caregivers" {...register(`hero_stats.${i}.label` as const)} disabled={!canEdit} />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
             </div>
           </div>
 
