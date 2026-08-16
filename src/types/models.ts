@@ -479,7 +479,6 @@ export interface SocialLinks extends BaseDoc {
   instagram?: string | null;
   linkedin?: string | null;
   youtube?: string | null;
-  twitter?: string | null;
   whatsapp?: string | null;
 }
 

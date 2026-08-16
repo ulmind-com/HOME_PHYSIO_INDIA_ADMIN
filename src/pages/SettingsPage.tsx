@@ -759,7 +759,6 @@ const SOCIAL_FIELDS: { name: keyof SocialLinks; label: string; icon: typeof Face
   { name: "instagram", label: "Instagram", icon: Instagram },
   { name: "linkedin", label: "LinkedIn", icon: Linkedin },
   { name: "youtube", label: "YouTube", icon: Youtube },
-  { name: "twitter", label: "Twitter / X", icon: Twitter },
   { name: "whatsapp", label: "WhatsApp", icon: MessageCircle },
 ];
 
