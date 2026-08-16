@@ -12,7 +12,8 @@ export type FieldType =
   | "image"
   | "video"
   | "tags"
-  | "date";
+  | "date"
+  | "divider";
 
 export interface FieldOption {
   label: string;

@@ -7,7 +7,6 @@ import {
   Plus,
   Trash2,
   Layers,
-  ImageIcon,
   Type,
   BarChart3,
   Smartphone,

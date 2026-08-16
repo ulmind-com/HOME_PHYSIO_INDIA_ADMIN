@@ -343,7 +343,25 @@ export interface HomeHero {
   trust_badge_quote?: string | null;
   trust_badge_avatars?: ImageAsset[];
   slider_images?: ImageAsset[];
+  slider_images_mobile?: ImageAsset[];
   stats?: HomeHeroStat[];
+}
+
+export interface CommitmentItem {
+  icon: string;
+  text: string;
+}
+
+export interface ComprehensiveServiceCard {
+  id?: string | null;
+  title: string;
+  image?: ImageAsset | string | null;
+  features: string[];
+  button_text: string;
+  button_link?: string | null;
+  select_label: string;
+  form_options: string[];
+  order: number;
 }
 
 export interface ValueItem {
@@ -421,6 +439,8 @@ export interface WebsiteSettings extends BaseDoc {
   hero_headline?: string | null;
   hero_subtitle?: string | null;
   hero_description?: string | null;
+  hero_cta_primary_text?: string | null;
+  hero_cta_secondary_text?: string | null;
   hero_image?: ImageAsset | null;
   hero_stats?: HeroStat[];
 
@@ -435,12 +455,19 @@ export interface WebsiteSettings extends BaseDoc {
   about_stats?: HeroStat[];
   about_values?: ValueItem[];
   about_commitments?: string[];
+  commitment_items?: CommitmentItem[];
   commitment_image?: ImageAsset | null;
   about_founders?: FounderCard[];
   about_address_name?: string | null;
   about_address_line1?: string | null;
   about_address_line2?: string | null;
   about_map_embed_url?: string | null;
+  why_choose_eyebrow?: string | null;
+  why_choose_title?: string | null;
+  why_choose_description?: string | null;
+  commitment_subtitle?: string | null;
+  commitment_badge_value?: string | null;
+  commitment_badge_label?: string | null;
   about_welcome_title?: string | null;
   about_welcome_description?: string | null;
   about_welcome_image?: ImageAsset | null;
@@ -458,6 +485,12 @@ export interface WebsiteSettings extends BaseDoc {
   trust_bar_items?: string[];
   why_choose_items?: WhyChooseItem[];
   conditions_list?: string[];
+
+  // Comprehensive Services
+  comprehensive_services_eyebrow?: string | null;
+  comprehensive_services_title?: string | null;
+  comprehensive_services_description?: string | null;
+  comprehensive_services?: ComprehensiveServiceCard[];
 
   // Footer
   footer_tagline?: string | null;

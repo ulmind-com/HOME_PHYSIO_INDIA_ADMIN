@@ -6,16 +6,17 @@ import {
   Settings as SettingsIcon,
   Globe,
   Share2,
-  Save,
+  MessageCircle,
   Facebook,
   Instagram,
   Linkedin,
   Youtube,
-  Twitter,
-  MessageCircle,
-  LayoutTemplate,
+  Save,
+  MoveUp,
+  MoveDown,
   Plus,
   Trash2,
+  LayoutTemplate,
   Layers,
   Scale,
   Home,
@@ -255,7 +256,7 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
   const { register, handleSubmit, reset, control } = useForm<HeroFormValues>({
     defaultValues: { services_hero: { slides: [] } },
   });
-  const { fields, append, remove, move } = useFieldArray({ control, name: "services_hero.slides" });
+  const { fields, append, remove } = useFieldArray({ control, name: "services_hero.slides" });
 
   useEffect(() => {
     if (data) {
@@ -508,7 +509,6 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
             </Field>
           </div>
 
-          {/* ── CTA Button Text ── */}
           <div className="space-y-4 pt-2 pb-6 border-b">
             <h3 className="font-semibold text-lg">CTA Buttons</h3>
             <p className="text-sm text-muted-foreground">Customise the text shown on the hero call-to-action buttons.</p>
@@ -530,7 +530,6 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
             </div>
           </div>
 
-          {/* ── Desktop Slider Images (16:9) ── */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
@@ -582,7 +581,6 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
             </div>
           </div>
 
-          {/* ── Mobile Slider Images (9:16) ── */}
           <div className="space-y-3 pt-4 border-t">
             <div className="flex items-center justify-between">
               <div>
@@ -732,7 +730,7 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
                           className="absolute -top-2 -right-2 w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => avatarsField.remove(i)}
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
@@ -858,6 +856,11 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
     onError: (err) => toast.error(normalizeError(err).message),
   });
 
+  const swap = (i: number, dir: "up" | "down") => {
+    if (dir === "up" && i > 0) featuresField.move(i, i - 1);
+    if (dir === "down" && i < featuresField.fields.length - 1) featuresField.move(i, i + 1);
+  };
+
   if (isLoading) return <Skeleton className="h-[400px] rounded-xl" />;
 
   return (
@@ -875,7 +878,6 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
-          {/* ── Heading & Description ── */}
           <div className="space-y-4">
             <Field label="Section Heading">
               <Input
@@ -894,7 +896,6 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
             </Field>
           </div>
 
-          {/* ── Features (3 items) ── */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label className="text-base font-semibold">Feature Highlights (left side)</Label>
@@ -913,6 +914,10 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
               {featuresField.fields.map((f, i) => (
                 <div key={f.id} className="p-4 border rounded-lg bg-muted/10 space-y-3">
                   <div className="flex gap-3 items-start">
+                    <div className="flex flex-col gap-1 mt-1">
+                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => swap(i, "up")}><MoveUp className="h-4 w-4" /></Button>
+                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => swap(i, "down")}><MoveDown className="h-4 w-4" /></Button>
+                    </div>
                     <div className="w-32 shrink-0 space-y-1.5">
                       <Label className="text-xs">Icon Image (PNG)</Label>
                       <Controller

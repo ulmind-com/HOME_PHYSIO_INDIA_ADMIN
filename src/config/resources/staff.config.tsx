@@ -3,7 +3,7 @@ import type { StaffMember } from "@/types/models";
 import { resourceServices } from "@/services/resources";
 import type { ResourceConfig } from "@/components/resource/types";
 import { Badge } from "@/components/ui/badge";
-import { BoolCell, DateCell, FeaturedCell, MediaCell, MutedCell } from "./cells";
+import { BoolCell, DateCell, FeaturedCell, MediaCell } from "./cells";
 
 export const staffConfig: ResourceConfig<StaffMember> = {
   name: "Staff Member",

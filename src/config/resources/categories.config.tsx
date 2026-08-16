@@ -52,7 +52,7 @@ export const categoriesConfig: ResourceConfig<Category> = {
     { name: "is_active", label: "Is Active", type: "switch", defaultValue: true },
     
     // --- Hero Section ---
-    { name: "hero_section", type: "divider", label: "Hero Section", description: "Manage the hero banner on the category's dedicated page." },
+    { name: "divider1", type: "divider", label: "Hero Section" },
     { name: "hero_badge", label: "Eyebrow Badge", type: "text", placeholder: "e.g. Skilled Nursing Care at Home" },
     { name: "hero_title", label: "Title", type: "text", placeholder: "e.g. Professional Nursing Support" },
     { name: "hero_description", label: "Description", type: "textarea", placeholder: "Hero description..." },
