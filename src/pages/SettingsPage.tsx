@@ -1013,10 +1013,10 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
           </div>
 
 
-          {/* ── Image Tiles (4 cards) ── */}
+          {/* ── Image Tiles (Categories) ── */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">Image Cards (right side — 2×2 grid)</Label>
+              <Label className="text-base font-semibold">Category Cards (Right Side)</Label>
               {canEdit && (
                 <Button
                   type="button"
