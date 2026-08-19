@@ -162,24 +162,6 @@ export function AboutPageManager() {
                   disabled={!canEdit}
                 />
               </Field>
-              <div className="space-y-1.5">
-                <Label>Hero Image (right side)</Label>
-                <p className="text-xs text-muted-foreground">The image displayed on the right side of the hero section.</p>
-                <div className="max-w-xs">
-                  <Controller
-                    control={control}
-                    name="about_hero_image"
-                    render={({ field }) => (
-                      <ImageUpload
-                        value={field.value ?? undefined}
-                        onChange={field.onChange}
-                        folder="nupun/about"
-                        aspect="wide"
-                      />
-                    )}
-                  />
-                </div>
-              </div>
             </CardContent>
           </Card>
 
