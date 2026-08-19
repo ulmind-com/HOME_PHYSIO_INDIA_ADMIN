@@ -9,11 +9,11 @@ import {
   EquipmentPage,
   BlogsPage,
   CareersPage,
-  VideosPage,
   TestimonialsPage,
   FaqPage,
   StaffPage,
 } from "@/pages/resource-pages";
+import { VideosPage } from "@/pages/VideosPage";
 import { BookingsPage } from "@/pages/bookings/BookingsPage";
 import { ComprehensiveBookingsPage } from "@/pages/bookings/ComprehensiveBookingsPage";
 import { PhysioRequestsPage } from "@/pages/physio/PhysioRequestsPage";

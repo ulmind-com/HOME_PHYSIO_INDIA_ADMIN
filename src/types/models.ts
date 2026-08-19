@@ -478,7 +478,8 @@ export interface WebsiteSettings extends BaseDoc {
   home_about_features?: HomeAboutFeature[];
   home_about_tiles?: HomeAboutTile[];
 
-  // Content sections
+  videos_wall_image?: ImageAsset | null;
+
   how_it_works_steps?: ValueItem[];
   team_tiles?: TeamTile[];
   care_team_slides?: CareTeamSlide[];
