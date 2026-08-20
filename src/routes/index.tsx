@@ -27,6 +27,7 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { CategoryHeroesPage } from "@/pages/CategoryHeroesPage";
 import { AboutPageManager } from "@/pages/AboutPageManager";
 import { ComprehensiveServicesPage } from "@/pages/ComprehensiveServicesPage";
+import { BookingFormManagerPage } from "@/pages/BookingFormManagerPage";
 import { UsersPage } from "@/pages/UsersPage";
 import { RolesPage } from "@/pages/RolesPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
@@ -64,6 +65,7 @@ export function AppRoutes() {
           <Route path="/category-heroes" element={<CategoryHeroesPage />} />
           <Route path="/about-page" element={<AboutPageManager />} />
           <Route path="/comprehensive-services-manager" element={<ComprehensiveServicesPage />} />
+          <Route path="/booking-form" element={<BookingFormManagerPage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/roles" element={<RolesPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />

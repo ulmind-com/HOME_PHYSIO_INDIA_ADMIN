@@ -121,8 +121,10 @@ export interface Booking extends BaseDoc {
   patient_gender?: string | null;
   contact_phone: string;
   contact_email?: string | null;
+  whatsapp_number?: string | null;
   service_id?: string | null;
   service_name: string;
+  care_required?: string | null;
   preferred_date: string;
   preferred_time?: string | null;
   address: string;
@@ -417,6 +419,33 @@ export interface LegalSection {
   body: string;
 }
 
+export interface BookingFormField {
+  name: string;
+  label: string;
+  type: "text" | "textarea" | "select" | "radio" | "date" | "time" | "number";
+  placeholder?: string | null;
+  required: boolean;
+  options: string[];
+  col_span: number;
+  order: number;
+}
+
+export interface BookingFormStep {
+  key: string;
+  label: string;
+  eyebrow?: string | null;
+  title?: string | null;
+  description?: string | null;
+  fields: BookingFormField[];
+  order: number;
+}
+
+export interface BookingFormConfig {
+  steps: BookingFormStep[];
+  cities: string[];
+  service_care_hints: Record<string, string>;
+}
+
 export interface WebsiteSettings extends BaseDoc {
   website_name: string;
   tagline?: string | null;
@@ -506,6 +535,9 @@ export interface WebsiteSettings extends BaseDoc {
   privacy_sections?: LegalSection[];
   terms_sections?: LegalSection[];
   refund_sections?: LegalSection[];
+
+  // Booking form config
+  booking_form_config?: BookingFormConfig | null;
 }
 
 export interface SocialLinks extends BaseDoc {

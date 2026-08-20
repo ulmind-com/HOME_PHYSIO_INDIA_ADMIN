@@ -13,6 +13,8 @@ import {
   X,
   Ban,
   UserPlus,
+  MessageSquare,
+  ClipboardList,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Booking } from "@/types/models";
@@ -126,8 +128,18 @@ export function BookingDrawer({ booking, onClose }: Props) {
                 <InfoRow icon={Clock} label="Preferred time" value={booking.preferred_time} />
                 <InfoRow icon={User} label="Patient" value={`${booking.patient_name}${booking.patient_age ? `, ${booking.patient_age}` : ""}`} />
                 <InfoRow icon={Phone} label="Phone" value={booking.contact_phone} />
+                <InfoRow icon={MessageSquare} label="WhatsApp" value={booking.whatsapp_number} />
                 <InfoRow icon={Mail} label="Email" value={booking.contact_email} />
               </section>
+
+              {booking.care_required && (
+                <div className="rounded-lg border border-border bg-muted/40 p-3">
+                  <p className="mb-1 text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                    <ClipboardList className="h-3.5 w-3.5" /> Care / Service Required
+                  </p>
+                  <p className="text-sm">{booking.care_required}</p>
+                </div>
+              )}
 
               <Separator />
 

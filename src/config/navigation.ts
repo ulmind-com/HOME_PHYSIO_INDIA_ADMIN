@@ -72,6 +72,7 @@ export const NAV_SECTIONS: NavSection[] = [
     title: "Content",
     items: [
       { label: "Comprehensive Services", to: "/comprehensive-services-manager", icon: Sparkles, permission: "settings:view" },
+      { label: "Booking Form", to: "/booking-form", icon: ClipboardList, permission: "settings:view" },
       { label: "Category Heroes", to: "/category-heroes", icon: Layers, permission: "settings:view" },
       { label: "About Page", to: "/about-page", icon: FileText, permission: "settings:view" },
       { label: "Blogs", to: "/blogs", icon: Newspaper, permission: "blogs:view" },
