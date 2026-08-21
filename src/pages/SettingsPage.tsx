@@ -9,7 +9,6 @@ import {
   MessageCircle,
   Facebook,
   Instagram,
-  Linkedin,
   Youtube,
   Save,
   MoveUp,
@@ -776,7 +775,6 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
 const SOCIAL_FIELDS: { name: keyof SocialLinks; label: string; icon: typeof Facebook }[] = [
   { name: "facebook", label: "Facebook", icon: Facebook },
   { name: "instagram", label: "Instagram", icon: Instagram },
-  { name: "linkedin", label: "LinkedIn", icon: Linkedin },
   { name: "youtube", label: "YouTube", icon: Youtube },
   { name: "whatsapp", label: "WhatsApp", icon: MessageCircle },
 ];

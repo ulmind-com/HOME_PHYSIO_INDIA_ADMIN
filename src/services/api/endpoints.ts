@@ -79,5 +79,10 @@ export const endpoints = {
     video: "/uploads/video",
     root: "/uploads",
   },
+  infectionControl: {
+    content: "/infection-control",
+    enquiries: "/infection-control/enquiries",
+    enquiry: (id: string) => `/infection-control/enquiries/${id}`,
+  },
   search: "/search",
 } as const;

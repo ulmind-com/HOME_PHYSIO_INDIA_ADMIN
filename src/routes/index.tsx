@@ -33,6 +33,8 @@ import { RolesPage } from "@/pages/RolesPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
 import { ActivityLogsPage } from "@/pages/ActivityLogsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { InfectionControlPage } from "@/pages/InfectionControlPage";
+import { InfectionControlEnquiriesPage } from "@/pages/InfectionControlEnquiriesPage";
 import { NotFoundPage } from "@/pages/ErrorPages";
 
 export function AppRoutes() {
@@ -70,6 +72,8 @@ export function AppRoutes() {
           <Route path="/roles" element={<RolesPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/activity" element={<ActivityLogsPage />} />
+          <Route path="/infection-control" element={<InfectionControlPage />} />
+          <Route path="/infection-control-enquiries" element={<InfectionControlEnquiriesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

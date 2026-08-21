@@ -24,6 +24,7 @@ import {
   Sparkles,
   Layers,
   FileText,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 
@@ -56,6 +57,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "Rental Requests", to: "/rentals", icon: ClipboardList, permission: "rentals:view" },
       { label: "Job Applications", to: "/applications", icon: FileUser, permission: "applications:view" },
       { label: "Contact Messages", to: "/contact", icon: Mail, permission: "contacts:view" },
+      { label: "IC Enquiries", to: "/infection-control-enquiries", icon: ShieldAlert, permission: "bookings:view" },
     ],
   },
   {
@@ -79,6 +81,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "Videos", to: "/videos", icon: Video, permission: "videos:view" },
       { label: "Testimonials", to: "/testimonials", icon: Quote, permission: "testimonials:view" },
       { label: "FAQ", to: "/faqs", icon: HelpCircle, permission: "faqs:view" },
+      { label: "Infection Control Page", to: "/infection-control", icon: ShieldCheck, permission: "settings:view" },
       { label: "Media Library", to: "/media", icon: Images, permission: "media:view" },
     ],
   },
