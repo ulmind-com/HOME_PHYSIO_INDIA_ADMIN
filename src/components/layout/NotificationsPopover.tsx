@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bell, CheckCheck, Calendar, Mail, FileUser, Package, Info } from "lucide-react";
+import { Bell, CheckCheck, Calendar, Mail, FileUser, Package, Info, ShieldAlert } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Popover,
@@ -21,6 +21,7 @@ const ICONS: Record<string, typeof Bell> = {
   contact: Mail,
   application: FileUser,
   rental: Package,
+  enquiry: ShieldAlert,
   system: Info,
 };
 

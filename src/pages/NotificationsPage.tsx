@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { Bell, CheckCheck, Calendar, Mail, FileUser, Package, Info, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, Calendar, Mail, FileUser, Package, Info, Trash2, ShieldAlert } from "lucide-react";
 import type { ListParams } from "@/types/api";
 import type { NotificationItem } from "@/types/models";
 import { notificationService } from "@/services/notification.service";
@@ -25,6 +25,7 @@ const ICONS: Record<string, typeof Bell> = {
   contact: Mail,
   application: FileUser,
   rental: Package,
+  enquiry: ShieldAlert,
   system: Info,
 };
 
