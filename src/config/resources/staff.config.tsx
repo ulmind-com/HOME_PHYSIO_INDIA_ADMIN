@@ -68,6 +68,15 @@ export const staffConfig: ResourceConfig<StaffMember> = {
   fields: [
     { name: "name", label: "Full Name", type: "text", required: true, section: "Details", colSpan: 2 },
     { name: "category", label: "Category", type: "text", required: true, placeholder: "e.g. Health Attendant, Nurse, Physiotherapist", section: "Details" },
+    {
+      name: "order",
+      label: "Order (tab position)",
+      type: "number",
+      defaultValue: 0,
+      min: 0,
+      section: "Details",
+      helper: "Lower number shows first on the website. The category whose staff has the smallest order becomes the 1st tab (1 = first, 2 = second, and so on).",
+    },
     { name: "service_label", label: "Service Label", type: "text", placeholder: "e.g. 24 hours Health Attendant", section: "Details", colSpan: 2 },
     {
       name: "rating",
@@ -91,6 +100,5 @@ export const staffConfig: ResourceConfig<StaffMember> = {
     { name: "price_30_days", label: "Price — 30 Days (₹)", type: "number", section: "Pricing" },
     { name: "is_featured", label: "Featured", type: "switch", section: "Visibility" },
     { name: "is_active", label: "Active", type: "switch", defaultValue: true, section: "Visibility" },
-    { name: "order", label: "Order", type: "number", defaultValue: 0, section: "Visibility" },
   ],
 };
