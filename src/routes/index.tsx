@@ -35,6 +35,8 @@ import { ActivityLogsPage } from "@/pages/ActivityLogsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { InfectionControlPage } from "@/pages/InfectionControlPage";
 import { InfectionControlEnquiriesPage } from "@/pages/InfectionControlEnquiriesPage";
+import { UserTypesPage } from "@/pages/UserTypesPage";
+import { MedicalReportsPage } from "@/pages/MedicalReportsPage";
 import { NotFoundPage } from "@/pages/ErrorPages";
 
 export function AppRoutes() {
@@ -69,6 +71,8 @@ export function AppRoutes() {
           <Route path="/comprehensive-services-manager" element={<ComprehensiveServicesPage />} />
           <Route path="/booking-form" element={<BookingFormManagerPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/user-types" element={<UserTypesPage />} />
+          <Route path="/medical-reports" element={<MedicalReportsPage />} />
           <Route path="/roles" element={<RolesPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/activity" element={<ActivityLogsPage />} />

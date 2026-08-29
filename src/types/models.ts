@@ -595,3 +595,23 @@ export interface DashboardCharts {
   booking_status: Record<string, number>;
   bookings_trend: { date: string; count: number }[];
 }
+
+export interface UserType extends BaseDoc {
+  name: string;
+  slug: string;
+  description: string;
+  is_core: boolean;
+}
+
+export type ReportType = "Prescription" | "X-Ray" | "MRI" | "Medical Report";
+export type ReportStatus = "Uploaded" | "Viewed" | "Reviewed";
+
+export interface MedicalReport extends BaseDoc {
+  patient_id: string;
+  title: string;
+  report_type: ReportType;
+  file: FileAsset | ImageAsset;
+  status: ReportStatus;
+  physio_notes: string;
+  reviewed_by_id?: string | null;
+}

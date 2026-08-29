@@ -84,5 +84,14 @@ export const endpoints = {
     enquiries: "/infection-control/enquiries",
     enquiry: (id: string) => `/infection-control/enquiries/${id}`,
   },
+  userTypes: {
+    root: "/user-types",
+    type: (id: string) => `/user-types/${id}`,
+  },
+  medicalReports: {
+    root: "/medical-reports",
+    report: (id: string) => `/medical-reports/${id}`,
+    review: (id: string) => `/medical-reports/${id}/review`,
+  },
   search: "/search",
 } as const;

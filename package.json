@@ -1,9 +1,9 @@
 {
-  "name": "nupun-health-admin",
+  "name": "home-physio-india-admin",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Ultra-premium admin panel for Nupun Home Health Care Services",
+  "description": "Ultra-premium admin panel for Home Physio India",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
