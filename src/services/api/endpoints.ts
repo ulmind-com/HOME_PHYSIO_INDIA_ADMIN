@@ -2,6 +2,7 @@
 export const endpoints = {
   auth: {
     login: "/auth/login",
+    phoneLogin: "/auth/phone-login",
     refresh: "/auth/refresh",
     logout: "/auth/logout",
     me: "/auth/me",
