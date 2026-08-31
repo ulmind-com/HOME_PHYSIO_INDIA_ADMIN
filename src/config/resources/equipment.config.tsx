@@ -69,7 +69,7 @@ export const equipmentConfig: ResourceConfig<Equipment> = {
     { name: "security_deposit", label: "Security deposit", type: "number", min: 0, section: "Pricing" },
     { name: "stock", label: "Stock quantity", type: "number", min: 0, defaultValue: 0, section: "Inventory" },
     { name: "is_available", label: "Available for rent", type: "switch", defaultValue: true, section: "Inventory" },
-    { name: "featured_image", label: "Featured image", type: "image", folder: "nupun/equipment", section: "Media" },
+    { name: "featured_image", label: "Featured image", type: "image", folder: "home-physio-india/equipment", section: "Media" },
     { name: "is_featured", label: "Feature on homepage", type: "switch", section: "Visibility" },
     { name: "status", label: "Status", type: "select", options: STATUS_OPTIONS, defaultValue: "published", section: "Visibility" },
     { name: "order", label: "Display order", type: "number", defaultValue: 0, section: "Visibility" },

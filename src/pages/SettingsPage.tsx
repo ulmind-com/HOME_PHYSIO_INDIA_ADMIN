@@ -209,7 +209,7 @@ function WebsiteForm({ canEdit }: { canEdit: boolean }) {
                   <ImageUpload
                     value={field.value}
                     onChange={field.onChange}
-                    folder="nupun/brand"
+                    folder="home-physio-india/brand"
                     aspect="wide"
                   />
                 )}
@@ -223,7 +223,7 @@ function WebsiteForm({ canEdit }: { canEdit: boolean }) {
                   <ImageUpload
                     value={field.value}
                     onChange={field.onChange}
-                    folder="nupun/brand"
+                    folder="home-physio-india/brand"
                     aspect="square"
                   />
                 )}
@@ -365,7 +365,7 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
                             <ImageUpload
                               value={field.value ?? undefined}
                               onChange={field.onChange}
-                              folder="nupun/hero"
+                              folder="home-physio-india/hero"
                               aspect="wide"
                             />
                           )}
@@ -379,7 +379,7 @@ function ServicesHeroForm({ canEdit }: { canEdit: boolean }) {
                             <ImageUpload
                               value={field.value ?? undefined}
                               onChange={field.onChange}
-                              folder="nupun/hero"
+                              folder="home-physio-india/hero"
                               aspect="portrait"
                             />
                           )}
@@ -559,7 +559,7 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
                       <ImageUpload
                         value={field.value ?? undefined}
                         onChange={field.onChange}
-                        folder="nupun/hero"
+                        folder="home-physio-india/hero"
                         aspect="wide"
                       />
                     )}
@@ -610,7 +610,7 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
                       <ImageUpload
                         value={field.value ?? undefined}
                         onChange={field.onChange}
-                        folder="nupun/hero/mobile"
+                        folder="home-physio-india/hero/mobile"
                         aspect="portrait"
                       />
                     )}
@@ -737,7 +737,7 @@ function HomeHeroForm({ canEdit }: { canEdit: boolean }) {
                           <ImageUpload
                             value={field.value ?? undefined}
                             onChange={field.onChange}
-                            folder="nupun/hero"
+                            folder="home-physio-india/hero"
                             aspect="square"
                           />
                         )}
@@ -909,7 +909,7 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
               <Textarea
                 {...register("home_about_description")}
                 rows={3}
-                placeholder="Nupun Home Health Care provides a qualified team of nursing staff..."
+                placeholder="Home Physio India provides a qualified team of nursing staff..."
                 disabled={!canEdit}
               />
             </Field>
@@ -1071,7 +1071,7 @@ function HomeAboutForm({ canEdit }: { canEdit: boolean }) {
                                 <ImageUpload
                                   value={field.value ? (typeof field.value === 'string' ? { url: field.value, public_id: '' } : field.value) : undefined}
                                   onChange={field.onChange}
-                                  folder="nupun/home-about"
+                                  folder="home-physio-india/home-about"
                                   aspect="square"
                                 />
                               )}
@@ -1149,7 +1149,7 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
         <CardContent className="space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label>Why Choose Nupun (Services Page)</Label>
+              <Label>Why Choose Home Physio India (Services Page)</Label>
               {canEdit && (
                 <Button type="button" variant="outline" size="sm" onClick={() => whyChooseField.append({ title: "", detail: "" })}>
                   <Plus className="h-4 w-4" /> Add Reason
@@ -1211,7 +1211,7 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Section Title</Label>
-                <Input {...register("why_choose_title")} placeholder="Why Choose Nupun Home Care?" disabled={!canEdit} />
+                <Input {...register("why_choose_title")} placeholder="Why Choose Home Physio India?" disabled={!canEdit} />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -1238,7 +1238,7 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
           <div className="space-y-3 pt-4 border-t border-border">
             <Label>Commitment Section — Team Image</Label>
             <p className="text-xs text-muted-foreground">
-              This image appears on the homepage &quot;Why Choose Nupun&quot; section (right side).
+              This image appears on the homepage &quot;Why Choose Home Physio India&quot; section (right side).
             </p>
             <Controller
               control={control}
@@ -1247,7 +1247,7 @@ function ContentSectionsForm({ canEdit }: { canEdit: boolean }) {
                 <ImageUpload
                   value={field.value ?? undefined}
                   onChange={field.onChange}
-                  folder="nupun/commitment"
+                  folder="home-physio-india/commitment"
                   aspect="wide"
                 />
               )}

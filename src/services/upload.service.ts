@@ -4,7 +4,7 @@ import type { FileAsset, ImageAsset } from "@/types/models";
 
 /** Upload helpers targeting the backend Cloudinary endpoints. */
 export const uploadService = {
-  image: (file: File, folder = "nupun/images") => {
+  image: (file: File, folder = "home-physio-india/images") => {
     const form = new FormData();
     form.append("file", file);
     form.append("folder", folder);
@@ -16,7 +16,7 @@ export const uploadService = {
     });
   },
 
-  file: (file: File, folder = "nupun/files") => {
+  file: (file: File, folder = "home-physio-india/files") => {
     const form = new FormData();
     form.append("file", file);
     form.append("folder", folder);
@@ -28,7 +28,7 @@ export const uploadService = {
     });
   },
 
-  video: (file: File, folder = "nupun/videos") => {
+  video: (file: File, folder = "home-physio-india/videos") => {
     const form = new FormData();
     form.append("file", file);
     form.append("folder", folder);

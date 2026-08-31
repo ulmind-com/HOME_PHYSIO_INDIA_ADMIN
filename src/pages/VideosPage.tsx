@@ -63,7 +63,7 @@ export function VideosPage() {
                     <ImageUpload
                       value={field.value ?? undefined}
                       onChange={field.onChange}
-                      folder="nupun/brand"
+                      folder="home-physio-india/brand"
                       aspect="portrait"
                     />
                   )}

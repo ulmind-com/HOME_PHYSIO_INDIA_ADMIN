@@ -76,7 +76,7 @@ export function LoginPage() {
               <HeartPulse className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-lg font-bold">Nupun Health</p>
+              <p className="text-lg font-bold">Home Physio India</p>
               <p className="text-sm text-white/70">Home Health Care Services</p>
             </div>
           </div>
@@ -113,7 +113,7 @@ export function LoginPage() {
           </div>
 
           <p className="text-sm text-white/60">
-            © {new Date().getFullYear()} Nupun Home Health Care Services.
+            © {new Date().getFullYear()} Home Physio India.
           </p>
         </div>
       </div>
@@ -131,7 +131,7 @@ export function LoginPage() {
               <HeartPulse className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-base font-bold">Nupun Health</p>
+              <p className="text-base font-bold">Home Physio India</p>
               <p className="text-xs text-muted-foreground">Admin Panel</p>
             </div>
           </div>

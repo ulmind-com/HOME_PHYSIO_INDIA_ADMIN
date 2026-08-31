@@ -58,7 +58,7 @@ export const servicesConfig: ResourceConfig<Service> = {
     { name: "category_name", label: "Category", type: "text", placeholder: "e.g. Nursing", section: "Basic details" },
     { name: "price", label: "Price", type: "number", min: 0, placeholder: "1500", section: "Pricing" },
     { name: "price_unit", label: "Price unit", type: "text", placeholder: "per day / per visit", section: "Pricing" },
-    { name: "featured_image", label: "Featured image", type: "image", folder: "nupun/services", section: "Media" },
+    { name: "featured_image", label: "Featured image", type: "image", folder: "home-physio-india/services", section: "Media" },
     { name: "is_featured", label: "Feature on homepage", type: "switch", section: "Visibility" },
     {
       name: "status",

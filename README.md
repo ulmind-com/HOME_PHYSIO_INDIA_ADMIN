@@ -1,6 +1,6 @@
-# Nupun Home Health — Admin Panel
+# Home Physio India — Admin Panel
 
-An **ultra-premium, production-ready admin dashboard** for *Nupun Home Health
+An **ultra-premium, production-ready admin dashboard** for *Home Physio India
 Care Services*. It is a pure **admin panel** (not the public website) that
 connects to the existing FastAPI + MongoDB backend over REST.
 
@@ -85,7 +85,7 @@ Set the API base URL in `.env`:
 
 ```bash
 VITE_API_BASE_URL=http://localhost:8000/api/v1
-VITE_APP_NAME="Nupun Home Health Care Services"
+VITE_APP_NAME="Home Physio India"
 ```
 
 > **CORS note:** open the app on the same host the backend allows. If the
@@ -159,4 +159,4 @@ Deploy `dist/` to any static host (Vercel, Netlify, Render Static, Nginx). Set
 
 ---
 
-© Nupun Home Health Care Services.
+© Home Physio India.

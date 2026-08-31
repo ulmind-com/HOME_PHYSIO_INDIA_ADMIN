@@ -304,7 +304,7 @@ function CategoryHeroForm({ category, canEdit }: { category: Category; canEdit: 
                       <ImageUpload
                         value={field.value ?? undefined}
                         onChange={field.onChange}
-                        folder="nupun/categories/hero"
+                        folder="home-physio-india/categories/hero"
                         aspect="wide"
                       />
                     )}
@@ -363,7 +363,7 @@ function CategoryHeroForm({ category, canEdit }: { category: Category; canEdit: 
                       <ImageUpload
                         value={field.value ?? undefined}
                         onChange={field.onChange}
-                        folder="nupun/categories/hero/mobile"
+                        folder="home-physio-india/categories/hero/mobile"
                         aspect="portrait"
                       />
                     )}

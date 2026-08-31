@@ -206,7 +206,7 @@ function ServiceCardEditor({
                         : undefined
                     }
                     onChange={field.onChange}
-                    folder="nupun/comprehensive-services"
+                    folder="home-physio-india/comprehensive-services"
                     aspect="video"
                   />
                 )}

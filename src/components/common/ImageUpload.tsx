@@ -18,7 +18,7 @@ interface ImageUploadProps {
 export function ImageUpload({
   value,
   onChange,
-  folder = "nupun/images",
+  folder = "home-physio-india/images",
   className,
   aspect = "video",
 }: ImageUploadProps) {

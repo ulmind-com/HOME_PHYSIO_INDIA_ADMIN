@@ -18,7 +18,7 @@ interface VideoUploadProps {
 export function VideoUpload({
   value,
   onChange,
-  folder = "nupun/videos",
+  folder = "home-physio-india/videos",
   className,
 }: VideoUploadProps) {
   const [uploading, setUploading] = useState(false);

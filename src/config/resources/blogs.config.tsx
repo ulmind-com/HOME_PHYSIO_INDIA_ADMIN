@@ -47,7 +47,7 @@ export const blogsConfig: ResourceConfig<Blog> = {
     { name: "author_name", label: "Author", type: "text", section: "Content" },
     { name: "category_name", label: "Category", type: "text", section: "Content" },
     { name: "tags", label: "Tags", type: "tags", section: "Content", placeholder: "Add tag…" },
-    { name: "featured_image", label: "Featured image", type: "image", folder: "nupun/blogs", section: "Media" },
+    { name: "featured_image", label: "Featured image", type: "image", folder: "home-physio-india/blogs", section: "Media" },
     { name: "is_featured", label: "Feature on homepage", type: "switch", section: "Publishing" },
     { name: "status", label: "Status", type: "select", options: STATUS_OPTIONS, defaultValue: "draft", section: "Publishing" },
     { name: "seo.meta_title", label: "Meta title", type: "text", section: "SEO" },

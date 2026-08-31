@@ -94,7 +94,7 @@ export const staffConfig: ResourceConfig<StaffMember> = {
     },
     { name: "experience", label: "Experience", type: "text", placeholder: "e.g. 3 years", section: "Details" },
     { name: "bio", label: "Bio / Description", type: "textarea", section: "Details" },
-    { name: "photo", label: "Photo", type: "image", folder: "nupun/staff", section: "Media" },
+    { name: "photo", label: "Photo", type: "image", folder: "home-physio-india/staff", section: "Media" },
     { name: "price_7_days", label: "Price — 7 Days (₹)", type: "number", section: "Pricing" },
     { name: "price_15_days", label: "Price — 15 Days (₹)", type: "number", section: "Pricing" },
     { name: "price_30_days", label: "Price — 30 Days (₹)", type: "number", section: "Pricing" },

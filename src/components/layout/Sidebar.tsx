@@ -37,7 +37,7 @@ export function Sidebar({ collapsed, onToggle, onNavigate }: SidebarProps) {
         {!collapsed && (
           <div className="min-w-0 leading-tight">
             <p className="truncate text-sm font-bold text-sidebar-foreground">
-              Nupun Health
+              Home Physio India
             </p>
             <p className="truncate text-[11px] text-muted-foreground">
               Admin Panel
