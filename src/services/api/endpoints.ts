@@ -2,7 +2,10 @@
 export const endpoints = {
   auth: {
     login: "/auth/login",
-    phoneLogin: "/auth/phone-login",
+    googleLogin: "/auth/google-login",
+    register: "/auth/register",
+    verifyEmail: "/auth/verify-email",
+    resendOtp: "/auth/resend-otp",
     refresh: "/auth/refresh",
     logout: "/auth/logout",
     me: "/auth/me",

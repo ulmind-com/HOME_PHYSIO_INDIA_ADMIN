@@ -22,8 +22,17 @@ export const authService = {
   login: (email: string, password: string) =>
     http.post<LoginResponse>(endpoints.auth.login, { email, password }),
 
-  phoneLogin: (id_token: string) =>
-    http.post<LoginResponse>(endpoints.auth.phoneLogin, { id_token }),
+  googleLogin: (id_token: string) =>
+    http.post<LoginResponse>(endpoints.auth.googleLogin, { id_token }),
+
+  register: (data: any) =>
+    http.post<{ success: boolean; message: string }>(endpoints.auth.register, data),
+
+  verifyEmail: (data: { email: string; otp: string }) =>
+    http.post<LoginResponse>(endpoints.auth.verifyEmail, data),
+
+  resendOtp: (email: string) =>
+    http.post<{ success: boolean; message: string }>(endpoints.auth.resendOtp, { email }),
 
   logout: (refresh_token: string) =>
     http.post<null>(endpoints.auth.logout, { refresh_token }),
