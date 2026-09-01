@@ -5,8 +5,9 @@ import { Helmet } from "react-helmet-async";
 import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal, Eye, FileText, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ListParams } from "@/types/api";
-import type { User } from "@/types/models";
+import type { User, UserType } from "@/types/models";
 import { userService, type UserCreatePayload } from "@/services/user.service";
+import { userTypesService } from "@/services/user-types.service";
 import { normalizeError } from "@/services/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { env } from "@/config/env";
@@ -61,6 +62,7 @@ interface UserForm {
   password: string;
   phone: string;
   role: string;
+  user_type: string;
   is_active: boolean;
   is_superuser: boolean;
   send_credentials_email: boolean;
@@ -77,24 +79,33 @@ export function TherapistsPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
+  const [userTypeFilter, setUserTypeFilter] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
   const [viewingDetails, setViewingDetails] = useState<User | null>(null);
 
   const params: ListParams = useMemo(
-    () => ({ page, page_size: pageSize, search: search || undefined, role: "therapist" }),
-    [page, pageSize, search]
+    () => ({
+      page,
+      page_size: pageSize,
+      search: search || undefined,
+      role: "therapist",
+      user_type: userTypeFilter || undefined,
+    }),
+    [page, pageSize, search, userTypeFilter]
   );
 
   const { data, isLoading } = useQuery({
     queryKey: ["therapists", "list", params],
     queryFn: () => userService.list(params),
   });
-  const { data: roles } = useQuery({
-    queryKey: ["users", "roles"],
-    queryFn: () => userService.roles(),
+  const { data: userTypesData } = useQuery({
+    queryKey: ["user-types", "list"],
+    queryFn: () => userTypesService.list(),
   });
+
+  const userTypes = userTypesData?.items ?? [];
 
   const form = useForm<UserForm>({
     defaultValues: {
@@ -103,6 +114,7 @@ export function TherapistsPage() {
       password: "",
       phone: "",
       role: "therapist",
+      user_type: "physiotherapist",
       is_active: true,
       is_superuser: false,
       send_credentials_email: true,
@@ -117,6 +129,7 @@ export function TherapistsPage() {
       password: "",
       phone: "",
       role: "therapist",
+      user_type: "physiotherapist",
       is_active: true,
       is_superuser: false,
       send_credentials_email: true,
@@ -132,6 +145,7 @@ export function TherapistsPage() {
       password: "",
       phone: user.phone ?? "",
       role: user.role,
+      user_type: user.user_type || "physiotherapist",
       is_active: user.is_active,
       is_superuser: user.is_superuser,
       send_credentials_email: false,
@@ -147,6 +161,7 @@ export function TherapistsPage() {
           name: rest.name,
           phone: rest.phone,
           role: rest.role,
+          user_type: rest.user_type,
           is_active: rest.is_active,
           is_superuser: rest.is_superuser,
         });
@@ -178,7 +193,7 @@ export function TherapistsPage() {
 
   const verifyDocMut = useMutation({
     mutationFn: (data: { userId: string; docId: string }) => userService.verifyDocument(data.userId, data.docId),
-    onSuccess: (res, variables) => {
+    onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: ["therapists"] });
       toast.success("Document verification updated");
       setViewingDetails((prev) => {
@@ -215,23 +230,44 @@ export function TherapistsPage() {
       />
 
       <Card className="overflow-hidden">
-        <div className="border-b border-border p-4">
+        <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
           <SearchInput
             value={search}
             onChange={(v) => {
               setPage(1);
               setSearch(v);
             }}
-            placeholder="Search users…"
+            placeholder="Search therapists…"
             className="w-full sm:max-w-xs"
           />
+          <Select
+            value={userTypeFilter || "__all__"}
+            onValueChange={(v) => {
+              setPage(1);
+              setUserTypeFilter(v === "__all__" ? "" : v);
+            }}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="All Therapist Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Therapist Types</SelectItem>
+              {userTypes
+                .filter((ut: UserType) => ut.slug !== "admin" && ut.slug !== "patient")
+                .map((ut: UserType) => (
+                  <SelectItem key={ut.id} value={ut.slug}>
+                    {ut.name}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>User</TableHead>
-              
+              <TableHead>Therapist Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Last login</TableHead>
               {(canUpdate || canDelete) && (
@@ -262,6 +298,11 @@ export function TherapistsPage() {
                         <p className="text-xs text-muted-foreground">{u.email}</p>
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {humanize(u.user_type || "physiotherapist")}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant={u.is_superuser ? "default" : "secondary"}>
@@ -373,7 +414,26 @@ export function TherapistsPage() {
                   <Label>Phone</Label>
                   <Input {...form.register("phone")} />
                 </div>
-
+                <div className="space-y-1.5">
+                  <Label>Therapist Type</Label>
+                  <Select
+                    value={form.watch("user_type")}
+                    onValueChange={(v) => form.setValue("user_type", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userTypes
+                        .filter((ut: UserType) => ut.slug !== "admin" && ut.slug !== "patient")
+                        .map((ut: UserType) => (
+                          <SelectItem key={ut.id} value={ut.slug}>
+                            {ut.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                 <span className="text-sm font-medium">Active account</span>

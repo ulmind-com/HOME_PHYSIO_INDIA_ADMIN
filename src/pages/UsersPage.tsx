@@ -5,8 +5,9 @@ import { Helmet } from "react-helmet-async";
 import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import type { ListParams } from "@/types/api";
-import type { User } from "@/types/models";
+import type { User, UserType } from "@/types/models";
 import { userService, type UserCreatePayload } from "@/services/user.service";
+import { userTypesService } from "@/services/user-types.service";
 import { normalizeError } from "@/services/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { env } from "@/config/env";
@@ -61,6 +62,7 @@ interface UserForm {
   password: string;
   phone: string;
   role: string;
+  user_type: string;
   is_active: boolean;
   is_superuser: boolean;
   send_credentials_email: boolean;
@@ -77,13 +79,19 @@ export function UsersPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
+  const [userTypeFilter, setUserTypeFilter] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
 
   const params: ListParams = useMemo(
-    () => ({ page, page_size: pageSize, search: search || undefined }),
-    [page, pageSize, search]
+    () => ({
+      page,
+      page_size: pageSize,
+      search: search || undefined,
+      user_type: userTypeFilter || undefined,
+    }),
+    [page, pageSize, search, userTypeFilter]
   );
 
   const { data, isLoading } = useQuery({
@@ -94,6 +102,12 @@ export function UsersPage() {
     queryKey: ["users", "roles"],
     queryFn: () => userService.roles(),
   });
+  const { data: userTypesData } = useQuery({
+    queryKey: ["user-types", "list"],
+    queryFn: () => userTypesService.list(),
+  });
+
+  const userTypes = userTypesData?.items ?? [];
 
   const form = useForm<UserForm>({
     defaultValues: {
@@ -102,6 +116,7 @@ export function UsersPage() {
       password: "",
       phone: "",
       role: "admin",
+      user_type: "admin",
       is_active: true,
       is_superuser: false,
       send_credentials_email: true,
@@ -116,6 +131,7 @@ export function UsersPage() {
       password: "",
       phone: "",
       role: "admin",
+      user_type: "admin",
       is_active: true,
       is_superuser: false,
       send_credentials_email: true,
@@ -131,6 +147,7 @@ export function UsersPage() {
       password: "",
       phone: user.phone ?? "",
       role: user.role,
+      user_type: user.user_type || "admin",
       is_active: user.is_active,
       is_superuser: user.is_superuser,
       send_credentials_email: false,
@@ -146,6 +163,7 @@ export function UsersPage() {
           name: rest.name,
           phone: rest.phone,
           role: rest.role,
+          user_type: rest.user_type,
           is_active: rest.is_active,
           is_superuser: rest.is_superuser,
         });
@@ -196,7 +214,7 @@ export function UsersPage() {
       />
 
       <Card className="overflow-hidden">
-        <div className="border-b border-border p-4">
+        <div className="flex flex-col gap-3 border-b border-border p-4 sm:flex-row sm:items-center sm:justify-between">
           <SearchInput
             value={search}
             onChange={(v) => {
@@ -206,12 +224,32 @@ export function UsersPage() {
             placeholder="Search users…"
             className="w-full sm:max-w-xs"
           />
+          <Select
+            value={userTypeFilter || "__all__"}
+            onValueChange={(v) => {
+              setPage(1);
+              setUserTypeFilter(v === "__all__" ? "" : v);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All User Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All User Types</SelectItem>
+              {userTypes.map((ut: UserType) => (
+                <SelectItem key={ut.id} value={ut.slug}>
+                  {ut.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead>User</TableHead>
+              <TableHead>User Type</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Last login</TableHead>
@@ -243,6 +281,11 @@ export function UsersPage() {
                         <p className="text-xs text-muted-foreground">{u.email}</p>
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {humanize(u.user_type || "N/A")}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant={u.is_superuser ? "default" : "secondary"}>
@@ -348,8 +391,22 @@ export function UsersPage() {
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label>Phone</Label>
-                  <Input {...form.register("phone")} />
+                  <Label>User Type</Label>
+                  <Select
+                    value={form.watch("user_type")}
+                    onValueChange={(v) => form.setValue("user_type", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userTypes.map((ut: UserType) => (
+                        <SelectItem key={ut.id} value={ut.slug}>
+                          {ut.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Role</Label>

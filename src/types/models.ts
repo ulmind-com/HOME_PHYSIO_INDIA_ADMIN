@@ -71,6 +71,7 @@ export interface User extends BaseDoc {
   phone?: string | null;
   avatar?: ImageAsset | null;
   role: string;
+  user_type?: string;
   extra_permissions: string[];
   is_active: boolean;
   is_superuser: boolean;

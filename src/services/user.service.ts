@@ -9,6 +9,7 @@ export interface UserCreatePayload {
   password?: string;
   phone?: string;
   role: string;
+  user_type?: string;
   is_active: boolean;
   is_superuser: boolean;
   send_credentials_email?: boolean;
