@@ -114,19 +114,41 @@ export interface NormalizedError {
 
 export function normalizeError(error: unknown): NormalizedError {
   if (axios.isAxiosError(error)) {
-    const envelope = error.response?.data as ApiEnvelope | undefined;
+    const data = error.response?.data as any;
     const fields: Record<string, string> = {};
-    if (envelope && Array.isArray(envelope.errors)) {
-      for (const e of envelope.errors) {
-        if (e.field) fields[e.field] = e.message;
+    let message = error.message || "Something went wrong. Please try again.";
+
+    if (data) {
+      if (data.message) {
+        message = data.message;
+      }
+      
+      // Handle standard ApiEnvelope errors array
+      if (Array.isArray(data.errors)) {
+        for (const e of data.errors) {
+          if (e.field) fields[e.field] = e.message;
+        }
+      } 
+      // Handle FastAPI Pydantic validation errors (422)
+      else if (error.response?.status === 422 && Array.isArray(data.detail)) {
+        message = "Validation failed: ";
+        const errorMsgs: string[] = [];
+        for (const d of data.detail) {
+          const fieldName = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : "field";
+          fields[fieldName] = d.msg;
+          errorMsgs.push(`${fieldName}: ${d.msg}`);
+        }
+        message += errorMsgs.join(", ");
+      } 
+      // Handle single detail string
+      else if (typeof data.detail === "string") {
+        message = data.detail;
       }
     }
+
     return {
       status: error.response?.status ?? 0,
-      message:
-        envelope?.message ||
-        error.message ||
-        "Something went wrong. Please try again.",
+      message,
       fields: Object.keys(fields).length ? fields : undefined,
       raw: error,
     };

@@ -328,6 +328,7 @@ export function UsersPage() {
                     <Label>Password</Label>
                     <Input 
                       type="password" 
+                      autoComplete="new-password"
                       placeholder="Leave blank to auto-generate" 
                       {...form.register("password")} 
                     />
