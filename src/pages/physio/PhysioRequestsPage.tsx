@@ -73,32 +73,28 @@ export function PhysioRequestsPage() {
   const [status, setStatus] = useState<string>("");
   const [selected, setSelected] = useState<Booking | null>(null);
 
-  // Fetch all bookings and filter client-side for physio ones
-  const params: ListParams = useMemo(
-    () => ({
-      page,
-      page_size: pageSize,
-      search: search || undefined,
-      status: (status as BookingStatus) || undefined,
-    }),
-    [page, pageSize, search, status]
-  );
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["bookings", "list", "physio", params],
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["bookings", "list", "physio", search, status, page, pageSize],
     queryFn: async () => {
-      // Fetch a larger page to ensure we have enough physio results after filtering
-      const result = await bookingService.list({ ...params, page_size: 100 });
+      const result = await bookingService.list({
+        search: search || undefined,
+        status: (status as BookingStatus) || undefined,
+        page: 1,
+        page_size: 100,
+      });
       const physioItems = result.items.filter(isPhysioBooking);
+      const startIdx = (page - 1) * pageSize;
+      const paginatedItems = physioItems.slice(startIdx, startIdx + pageSize);
       return {
-        items: physioItems.slice((page - 1) * pageSize, page * pageSize),
-        pagination: result.pagination
-          ? {
-              ...result.pagination,
-              total: physioItems.length,
-              total_pages: Math.ceil(physioItems.length / pageSize),
-            }
-          : undefined,
+        items: paginatedItems,
+        pagination: {
+          total: physioItems.length,
+          page,
+          page_size: pageSize,
+          total_pages: Math.max(1, Math.ceil(physioItems.length / pageSize)),
+          has_next: startIdx + pageSize < physioItems.length,
+          has_prev: page > 1,
+        },
       };
     },
   });
@@ -163,6 +159,16 @@ export function PhysioRequestsPage() {
           <TableBody>
             {isLoading ? (
               <TableSkeleton rows={8} cols={6} />
+            ) : isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={6} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">Failed to load physio requests</p>
+                    <p className="text-xs text-muted-foreground">{normalizeError(error).message}</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">Retry</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={6} className="p-0">

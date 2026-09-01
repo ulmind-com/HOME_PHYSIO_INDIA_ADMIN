@@ -211,6 +211,22 @@ export function ResourceView<T extends { id: string }>({
           <TableBody>
             {listQuery.isLoading ? (
               <TableSkeleton rows={pageSize > 10 ? 8 : 6} cols={colCount} />
+            ) : listQuery.isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={colCount} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">
+                      Failed to load {config.titlePlural.toLowerCase()}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {normalizeError(listQuery.error).message}
+                    </p>
+                    <Button variant="outline" size="sm" onClick={() => listQuery.refetch()} className="mt-2">
+                      Retry
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={colCount} className="p-0">

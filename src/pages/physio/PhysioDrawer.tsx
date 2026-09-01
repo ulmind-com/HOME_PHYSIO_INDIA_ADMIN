@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   User,
   Phone,
@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import type { Booking } from "@/types/models";
 import { bookingService } from "@/services/booking.service";
+import { userService } from "@/services/user.service";
 import { normalizeError } from "@/services/api/client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -66,7 +67,20 @@ export function PhysioDrawer({ booking, onClose }: Props) {
   const { hasPermission } = useAuth();
   const canUpdate = hasPermission("bookings:update");
   const [notes, setNotes] = useState("");
-  const [staffName, setStaffName] = useState("");
+  const [selectedStaffId, setSelectedStaffId] = useState("");
+
+  useEffect(() => {
+    setNotes("");
+    setSelectedStaffId("");
+  }, [booking?.id]);
+
+  const { data: therapistsData } = useQuery({
+    queryKey: ["therapists", "select"],
+    queryFn: () => userService.list({ page_size: 100, role: "therapist" }),
+    enabled: Boolean(booking),
+  });
+
+  const therapists = therapistsData?.items ?? [];
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["bookings"] });
@@ -89,12 +103,19 @@ export function PhysioDrawer({ booking, onClose }: Props) {
   });
 
   const assign = useMutation({
-    mutationFn: () =>
-      bookingService.assign(booking!.id, staffName || "staff", staffName),
-    onSuccess: () => {
+    mutationFn: () => {
+      const selected = therapists.find((t) => t.id === selectedStaffId);
+      if (!selected) throw new Error("Please select a valid therapist");
+      return bookingService.assign(booking!.id, selected.id, selected.name);
+    },
+    onSuccess: (updatedBooking) => {
       invalidate();
-      toast.success("Physiotherapist assigned");
-      setStaffName("");
+      toast.success("Physiotherapist assigned successfully");
+      if (booking && updatedBooking) {
+        booking.assigned_staff_id = updatedBooking.assigned_staff_id;
+        booking.assigned_staff_name = updatedBooking.assigned_staff_name;
+      }
+      setSelectedStaffId("");
     },
     onError: (err) => toast.error(normalizeError(err).message),
   });
@@ -165,16 +186,23 @@ export function PhysioDrawer({ booking, onClose }: Props) {
                     <div className="space-y-1.5">
                       <Label>Assign Physiotherapist</Label>
                       <div className="flex gap-2">
-                        <Input
-                          value={staffName}
-                          onChange={(e) => setStaffName(e.target.value)}
-                          placeholder="Physiotherapist name"
-                        />
+                        <select
+                          value={selectedStaffId}
+                          onChange={(e) => setSelectedStaffId(e.target.value)}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          <option value="">-- Select Physiotherapist --</option>
+                          {therapists.map((t) => (
+                            <option key={t.id} value={t.id}>
+                              {t.name} ({t.email})
+                            </option>
+                          ))}
+                        </select>
                         <Button
                           variant="outline"
                           onClick={() => assign.mutate()}
                           loading={assign.isPending}
-                          disabled={!staffName}
+                          disabled={!selectedStaffId}
                         >
                           <UserPlus /> Assign
                         </Button>

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { normalizeError } from "@/services/api/client";
 import { format } from "date-fns";
 import { Search, Loader2, Filter, Eye, Phone, User, CheckCircle, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -55,6 +57,7 @@ export default function ElderCareRequestsPage() {
       setRequests(data?.items || []);
     } catch (error) {
       console.error("Failed to fetch elder care requests", error);
+      toast.error(normalizeError(error).message);
     } finally {
       setLoading(false);
     }
@@ -67,12 +70,14 @@ export default function ElderCareRequestsPage() {
   const updateStatus = async (id: string, newStatus: string) => {
     try {
       await apiClient.patch(`/elder-care/${id}`, { status: newStatus });
+      toast.success("Status updated successfully");
       fetchRequests();
       if (selectedRequest && selectedRequest.id === id) {
         setSelectedRequest({ ...selectedRequest, status: newStatus as any });
       }
     } catch (error) {
       console.error("Failed to update status", error);
+      toast.error(normalizeError(error).message);
     }
   };
 

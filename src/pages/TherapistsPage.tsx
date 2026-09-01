@@ -68,10 +68,11 @@ interface UserForm {
 
 export function TherapistsPage() {
   const qc = useQueryClient();
-  const { hasPermission } = useAuth();
+  const { user: currentUser, hasPermission } = useAuth();
   const canCreate = hasPermission("users:create");
   const canUpdate = hasPermission("users:update");
   const canDelete = hasPermission("users:delete");
+  const isSuperuser = Boolean(currentUser?.is_superuser);
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -381,16 +382,18 @@ export function TherapistsPage() {
                   onCheckedChange={(v) => form.setValue("is_active", v)}
                 />
               </label>
-              <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium">Super admin</p>
-                  <p className="text-xs text-muted-foreground">Full unrestricted access</p>
-                </div>
-                <Switch
-                  checked={form.watch("is_superuser")}
-                  onCheckedChange={(v) => form.setValue("is_superuser", v)}
-                />
-              </label>
+              {isSuperuser && (
+                <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                  <div>
+                    <p className="text-sm font-medium">Super admin</p>
+                    <p className="text-xs text-muted-foreground">Full unrestricted access</p>
+                  </div>
+                  <Switch
+                    checked={form.watch("is_superuser")}
+                    onCheckedChange={(v) => form.setValue("is_superuser", v)}
+                  />
+                </label>
+              )}
             </div>
 
             <DialogFooter>
