@@ -2,7 +2,7 @@
 export const env = {
   API_BASE_URL:
     (import.meta.env.VITE_API_BASE_URL as string) ??
-    "https://home-physio-india-backend.onrender.com/api/v1",
+    "http://localhost:8000/api/v1",
   APP_NAME:
     (import.meta.env.VITE_APP_NAME as string) ??
     "Home Physio India",

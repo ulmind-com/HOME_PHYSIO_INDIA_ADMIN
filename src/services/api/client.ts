@@ -123,26 +123,34 @@ export function normalizeError(error: unknown): NormalizedError {
         message = data.message;
       }
       
+      const errorMsgs: string[] = [];
+      
       // Handle standard ApiEnvelope errors array
       if (Array.isArray(data.errors)) {
         for (const e of data.errors) {
-          if (e.field) fields[e.field] = e.message;
+          if (e.field && e.message) {
+            fields[e.field] = e.message;
+            errorMsgs.push(`${e.field}: ${e.message}`);
+          }
         }
       } 
-      // Handle FastAPI Pydantic validation errors (422)
+      // Handle FastAPI Pydantic validation errors (422) without ApiEnvelope
       else if (error.response?.status === 422 && Array.isArray(data.detail)) {
-        message = "Validation failed: ";
-        const errorMsgs: string[] = [];
         for (const d of data.detail) {
           const fieldName = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : "field";
           fields[fieldName] = d.msg;
           errorMsgs.push(`${fieldName}: ${d.msg}`);
         }
-        message += errorMsgs.join(", ");
       } 
       // Handle single detail string
       else if (typeof data.detail === "string") {
         message = data.detail;
+      }
+
+      // Append detailed field errors to the main message if any exist
+      if (errorMsgs.length > 0) {
+        // If the backend just returned a generic "Validation failed" message, let's make it more helpful
+        message = `${message === "Validation failed" ? "Validation Error" : message} — ${errorMsgs.join(", ")}`;
       }
     }
 
