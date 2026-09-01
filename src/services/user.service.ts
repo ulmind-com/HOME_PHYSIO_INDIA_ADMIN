@@ -13,6 +13,16 @@ export interface UserCreatePayload {
   is_active: boolean;
   is_superuser: boolean;
   send_credentials_email?: boolean;
+  specialization?: string;
+  experience_years?: number;
+  qualification?: string;
+  therapist_tier?: string;
+}
+
+export interface VerificationUpdatePayload {
+  verification_status: "approved" | "rejected";
+  therapist_tier?: string;
+  rejection_reason?: string;
 }
 
 export const userService = {
@@ -23,6 +33,8 @@ export const userService = {
   remove: (id: string) => http.del<null>(`${endpoints.users.root}/${id}`),
   verifyDocument: (userId: string, docId: string) =>
     http.patch<any>(`${endpoints.users.root}/${userId}/documents/${docId}/verify`),
+  updateVerification: (userId: string, data: VerificationUpdatePayload) =>
+    http.patch<User>(`${endpoints.users.root}/${userId}/verification`, data),
 
   roles: () => http.get<Role[]>(endpoints.users.roles),
   createRole: (data: { name: string; description?: string; permissions: string[] }) =>

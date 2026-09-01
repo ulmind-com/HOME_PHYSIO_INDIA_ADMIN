@@ -64,7 +64,7 @@ export function BookingsPage() {
     [page, pageSize, search, status]
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["bookings", "list", params],
     queryFn: () => bookingService.list(params),
   });
@@ -149,6 +149,16 @@ export function BookingsPage() {
           <TableBody>
             {isLoading ? (
               <TableSkeleton rows={8} cols={6} />
+            ) : isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={6} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">Failed to load bookings</p>
+                    <p className="text-xs text-muted-foreground">{normalizeError(error).message}</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">Retry</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={6} className="p-0">

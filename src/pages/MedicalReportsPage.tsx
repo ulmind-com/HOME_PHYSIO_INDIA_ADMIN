@@ -85,7 +85,7 @@ export function MedicalReportsPage() {
     [page, pageSize, search]
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["medical-reports", "list", params],
     queryFn: () => medicalReportsService.list(params),
   });
@@ -212,6 +212,16 @@ export function MedicalReportsPage() {
           <TableBody>
             {isLoading ? (
               <TableSkeleton rows={5} cols={6} />
+            ) : isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={6} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">Failed to load reports</p>
+                    <p className="text-xs text-muted-foreground">{normalizeError(error).message}</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">Retry</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={6} className="p-0">

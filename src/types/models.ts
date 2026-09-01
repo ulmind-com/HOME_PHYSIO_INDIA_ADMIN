@@ -77,6 +77,14 @@ export interface User extends BaseDoc {
   is_superuser: boolean;
   last_login_at?: string | null;
   documents?: TherapistDocument[];
+  age?: number | null;
+  pincode?: string | null;
+  medical_condition?: string | null;
+  specialization?: string | null;
+  experience_years?: number | null;
+  qualification?: string | null;
+  therapist_tier?: string | null;
+  verification_status?: "pending" | "approved" | "rejected";
 }
 
 export interface Role extends BaseDoc {

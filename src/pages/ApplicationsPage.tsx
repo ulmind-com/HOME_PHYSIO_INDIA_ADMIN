@@ -70,7 +70,7 @@ export function ApplicationsPage() {
     [page, pageSize, search, status]
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["applications", "list", params],
     queryFn: () =>
       http.list<JobApplication>(endpoints.careers.applications, params),
@@ -144,6 +144,16 @@ export function ApplicationsPage() {
           <TableBody>
             {isLoading ? (
               <TableSkeleton rows={8} cols={5} />
+            ) : isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={5} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">Failed to load applications</p>
+                    <p className="text-xs text-muted-foreground">{normalizeError(error).message}</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">Retry</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={5} className="p-0">

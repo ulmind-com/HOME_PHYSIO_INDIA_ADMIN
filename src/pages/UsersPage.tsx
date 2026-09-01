@@ -94,7 +94,7 @@ export function UsersPage() {
     [page, pageSize, search, userTypeFilter]
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["users", "list", params],
     queryFn: () => userService.list(params),
   });
@@ -261,6 +261,16 @@ export function UsersPage() {
           <TableBody>
             {isLoading ? (
               <TableSkeleton rows={6} cols={5} />
+            ) : isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={5} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">Failed to load users</p>
+                    <p className="text-xs text-muted-foreground">{normalizeError(error).message}</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">Retry</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={5} className="p-0">

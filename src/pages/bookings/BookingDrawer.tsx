@@ -77,7 +77,7 @@ export function BookingDrawer({ booking, onClose }: Props) {
 
   const { data: therapistsData } = useQuery({
     queryKey: ["therapists", "select"],
-    queryFn: () => userService.list({ page_size: 100, role: "therapist" }),
+    queryFn: () => userService.list({ page_size: 100, role: "therapist", verification_status: "approved" }),
     enabled: Boolean(booking),
   });
 

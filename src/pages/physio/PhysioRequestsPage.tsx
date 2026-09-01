@@ -51,10 +51,7 @@ const PHYSIO_KEYWORDS = [
   "exercise therapy",
 ];
 
-function isPhysioBooking(b: Booking): boolean {
-  const name = b.service_name.toLowerCase();
-  return PHYSIO_KEYWORDS.some((kw) => name.includes(kw));
-}
+const PHYSIO_KEYWORDS_PARAM = PHYSIO_KEYWORDS.join(",");
 
 const STATUS_FILTERS: { label: string; value: string }[] = [
   { label: "Pending", value: "pending" },
@@ -75,28 +72,14 @@ export function PhysioRequestsPage() {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["bookings", "list", "physio", search, status, page, pageSize],
-    queryFn: async () => {
-      const result = await bookingService.list({
+    queryFn: () =>
+      bookingService.list({
         search: search || undefined,
         status: (status as BookingStatus) || undefined,
-        page: 1,
-        page_size: 100,
-      });
-      const physioItems = result.items.filter(isPhysioBooking);
-      const startIdx = (page - 1) * pageSize;
-      const paginatedItems = physioItems.slice(startIdx, startIdx + pageSize);
-      return {
-        items: paginatedItems,
-        pagination: {
-          total: physioItems.length,
-          page,
-          page_size: pageSize,
-          total_pages: Math.max(1, Math.ceil(physioItems.length / pageSize)),
-          has_next: startIdx + pageSize < physioItems.length,
-          has_prev: page > 1,
-        },
-      };
-    },
+        service_keywords: PHYSIO_KEYWORDS_PARAM,
+        page,
+        page_size: pageSize,
+      }),
   });
 
   const items = data?.items ?? [];

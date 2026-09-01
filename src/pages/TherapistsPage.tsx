@@ -47,6 +47,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -55,6 +56,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StatusBadge } from "@/components/common/StatusBadge";
+
+const QUALIFICATIONS = ["MPT", "BPT", "PT", "DPT"];
+const TIERS = [
+  { value: "verified", label: "Verified" },
+  { value: "associate", label: "Associate" },
+  { value: "premium", label: "Premium" },
+];
 
 interface UserForm {
   name: string;
@@ -66,6 +74,9 @@ interface UserForm {
   is_active: boolean;
   is_superuser: boolean;
   send_credentials_email: boolean;
+  qualification: string;
+  therapist_tier: string;
+  experience_years: string;
 }
 
 export function TherapistsPage() {
@@ -80,10 +91,13 @@ export function TherapistsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
   const [userTypeFilter, setUserTypeFilter] = useState<string>("");
+  const [verificationFilter, setVerificationFilter] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
   const [viewingDetails, setViewingDetails] = useState<User | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<User | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const params: ListParams = useMemo(
     () => ({
@@ -92,11 +106,12 @@ export function TherapistsPage() {
       search: search || undefined,
       role: "therapist",
       user_type: userTypeFilter || undefined,
+      verification_status: verificationFilter || undefined,
     }),
-    [page, pageSize, search, userTypeFilter]
+    [page, pageSize, search, userTypeFilter, verificationFilter]
   );
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["therapists", "list", params],
     queryFn: () => userService.list(params),
   });
@@ -118,6 +133,9 @@ export function TherapistsPage() {
       is_active: true,
       is_superuser: false,
       send_credentials_email: true,
+      qualification: "",
+      therapist_tier: "",
+      experience_years: "",
     },
   });
 
@@ -133,6 +151,9 @@ export function TherapistsPage() {
       is_active: true,
       is_superuser: false,
       send_credentials_email: true,
+      qualification: "",
+      therapist_tier: "",
+      experience_years: "",
     });
     setDialogOpen(true);
   };
@@ -149,34 +170,60 @@ export function TherapistsPage() {
       is_active: user.is_active,
       is_superuser: user.is_superuser,
       send_credentials_email: false,
+      qualification: user.qualification ?? "",
+      therapist_tier: user.therapist_tier ?? "",
+      experience_years: user.experience_years != null ? String(user.experience_years) : "",
     });
     setDialogOpen(true);
   };
 
   const save = useMutation({
     mutationFn: (values: UserForm) => {
+      const experience_years = values.experience_years ? Number(values.experience_years) : undefined;
       if (editing) {
-        const { ...rest } = values;
         return userService.update(editing.id, {
-          name: rest.name,
-          phone: rest.phone,
-          role: rest.role,
-          user_type: rest.user_type,
-          is_active: rest.is_active,
-          is_superuser: rest.is_superuser,
+          name: values.name,
+          phone: values.phone,
+          role: values.role,
+          user_type: values.user_type,
+          is_active: values.is_active,
+          is_superuser: values.is_superuser,
+          qualification: values.qualification || undefined,
+          therapist_tier: values.therapist_tier || undefined,
+          experience_years,
         });
       }
-      
+
       const payload: Partial<UserForm> = { ...values };
       if (!payload.password) {
         delete payload.password;
       }
-      return userService.create(payload as UserCreatePayload);
+      return userService.create({
+        ...(payload as UserCreatePayload),
+        qualification: values.qualification || undefined,
+        therapist_tier: values.therapist_tier || undefined,
+        experience_years,
+      });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["therapists"] });
       toast.success(editing ? "User updated" : "User created");
       setDialogOpen(false);
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  const verify = useMutation({
+    mutationFn: (data: { userId: string; status: "approved" | "rejected"; reason?: string }) =>
+      userService.updateVerification(data.userId, {
+        verification_status: data.status,
+        rejection_reason: data.reason,
+      }),
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: ["therapists"] });
+      toast.success(variables.status === "approved" ? "Therapist approved" : "Therapist rejected");
+      setRejectTarget(null);
+      setRejectReason("");
     },
     onError: (err) => toast.error(normalizeError(err).message),
   });
@@ -261,6 +308,23 @@ export function TherapistsPage() {
                 ))}
             </SelectContent>
           </Select>
+          <Select
+            value={verificationFilter || "__all__"}
+            onValueChange={(v) => {
+              setPage(1);
+              setVerificationFilter(v === "__all__" ? "" : v);
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Verification" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Verification</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <Table>
@@ -268,6 +332,8 @@ export function TherapistsPage() {
             <TableRow className="hover:bg-transparent">
               <TableHead>User</TableHead>
               <TableHead>Therapist Type</TableHead>
+              <TableHead>Verification</TableHead>
+              <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Last login</TableHead>
               {(canUpdate || canDelete) && (
@@ -277,10 +343,20 @@ export function TherapistsPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableSkeleton rows={6} cols={5} />
+              <TableSkeleton rows={6} cols={7} />
+            ) : isError ? (
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={7} className="py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-medium text-destructive">Failed to load therapists</p>
+                    <p className="text-xs text-muted-foreground">{normalizeError(error).message}</p>
+                    <Button variant="outline" size="sm" onClick={() => refetch()} className="mt-2">Retry</Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : items.length === 0 ? (
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={5} className="p-0">
+                <TableCell colSpan={7} className="p-0">
                   <EmptyState icon={<UsersIcon />} title="No users" />
                 </TableCell>
               </TableRow>
@@ -303,6 +379,14 @@ export function TherapistsPage() {
                     <Badge variant="outline" className="capitalize">
                       {humanize(u.user_type || "physiotherapist")}
                     </Badge>
+                    {u.therapist_tier && (
+                      <Badge variant="secondary" className="ml-1.5 capitalize">
+                        {u.therapist_tier}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={u.verification_status || "approved"} />
                   </TableCell>
                   <TableCell>
                     <Badge variant={u.is_superuser ? "default" : "secondary"}>
@@ -327,6 +411,19 @@ export function TherapistsPage() {
                           <DropdownMenuItem onClick={() => setViewingDetails(u)}>
                             <Eye /> View Details
                           </DropdownMenuItem>
+                          {canUpdate && u.verification_status === "pending" && (
+                            <>
+                              <DropdownMenuItem
+                                onClick={() => verify.mutate({ userId: u.id, status: "approved" })}
+                                disabled={verify.isPending}
+                              >
+                                <CheckCircle2 /> Approve
+                              </DropdownMenuItem>
+                              <DropdownMenuItem destructive onClick={() => setRejectTarget(u)}>
+                                <Trash2 /> Reject
+                              </DropdownMenuItem>
+                            </>
+                          )}
                           {canUpdate && (
                             <DropdownMenuItem onClick={() => openEdit(u)}>
                               <Pencil /> Edit
@@ -435,6 +532,46 @@ export function TherapistsPage() {
                   </Select>
                 </div>
               </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Qualification</Label>
+                  <Select
+                    value={form.watch("qualification") || "__none__"}
+                    onValueChange={(v) => form.setValue("qualification", v === "__none__" ? "" : v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">Not set</SelectItem>
+                      {QUALIFICATIONS.map((q) => (
+                        <SelectItem key={q} value={q}>{q}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Tier</Label>
+                  <Select
+                    value={form.watch("therapist_tier") || "__none__"}
+                    onValueChange={(v) => form.setValue("therapist_tier", v === "__none__" ? "" : v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">Not set</SelectItem>
+                      {TIERS.map((t) => (
+                        <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Experience (yrs)</Label>
+                  <Input type="number" min={0} max={60} {...form.register("experience_years")} />
+                </div>
+              </div>
               <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                 <span className="text-sm font-medium">Active account</span>
                 <Switch
@@ -476,6 +613,36 @@ export function TherapistsPage() {
         loading={remove.isPending}
         onConfirm={() => deleteTarget && remove.mutate(deleteTarget.id)}
       />
+
+      <ConfirmDialog
+        open={Boolean(rejectTarget)}
+        onOpenChange={(o) => {
+          if (!o) {
+            setRejectTarget(null);
+            setRejectReason("");
+          }
+        }}
+        title="Reject therapist application?"
+        description={
+          <div className="space-y-3">
+            <p>
+              {`"${rejectTarget?.name}" will be notified by email and won't appear in the therapist directory.`}
+            </p>
+            <Textarea
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Optional reason to include in the email…"
+              rows={3}
+            />
+          </div>
+        }
+        confirmLabel="Reject"
+        loading={verify.isPending}
+        onConfirm={() =>
+          rejectTarget &&
+          verify.mutate({ userId: rejectTarget.id, status: "rejected", reason: rejectReason || undefined })
+        }
+      />
       {/* Therapist Details Dialog */}
       <Dialog open={!!viewingDetails} onOpenChange={(open) => !open && setViewingDetails(null)}>
         <DialogContent className="max-w-3xl">
@@ -513,12 +680,46 @@ export function TherapistsPage() {
                 <div className="space-y-4">
                   <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Professional Profile</h4>
                   <div className="grid grid-cols-3 gap-2 text-sm">
+                    <span className="font-medium text-muted-foreground">Type</span>
+                    <span className="col-span-2 capitalize">{humanize(viewingDetails.user_type || "physiotherapist")}</span>
+
+                    <span className="font-medium text-muted-foreground">Qualification</span>
+                    <span className="col-span-2">{viewingDetails.qualification || "-"}</span>
+
+                    <span className="font-medium text-muted-foreground">Tier</span>
+                    <span className="col-span-2 capitalize">{viewingDetails.therapist_tier || "-"}</span>
+
                     <span className="font-medium text-muted-foreground">Specialization</span>
-                    <span className="col-span-2">Physiotherapy</span>
-                    
+                    <span className="col-span-2">{viewingDetails.specialization || "-"}</span>
+
                     <span className="font-medium text-muted-foreground">Experience</span>
-                    <span className="col-span-2">N/A</span>
+                    <span className="col-span-2">
+                      {viewingDetails.experience_years != null ? `${viewingDetails.experience_years} years` : "-"}
+                    </span>
+
+                    <span className="font-medium text-muted-foreground">Verification</span>
+                    <span className="col-span-2">
+                      <StatusBadge status={viewingDetails.verification_status || "approved"} />
+                    </span>
                   </div>
+                  {viewingDetails.verification_status === "pending" && canUpdate && (
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        onClick={() => verify.mutate({ userId: viewingDetails.id, status: "approved" })}
+                        loading={verify.isPending}
+                      >
+                        <CheckCircle2 /> Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => setRejectTarget(viewingDetails)}
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
