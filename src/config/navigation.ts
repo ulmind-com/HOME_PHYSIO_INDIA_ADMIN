@@ -92,6 +92,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "SEO", to: "/seo", icon: Search, permission: "seo:view" },
       { label: "Website Settings", to: "/settings", icon: Settings, permission: "settings:view" },
       { label: "Users", to: "/users", icon: Users, permission: "users:view" },
+      { label: "Therapists", to: "/therapists", icon: Stethoscope, permission: "users:view" },
       { label: "User Types", to: "/user-types", icon: Users, permission: "users:view" },
       { label: "Roles", to: "/roles", icon: ShieldCheck, permission: "roles:view" },
       { label: "Notifications", to: "/notifications", icon: Bell, badgeKey: "notifications" },

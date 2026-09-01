@@ -29,6 +29,7 @@ import { AboutPageManager } from "@/pages/AboutPageManager";
 import { ComprehensiveServicesPage } from "@/pages/ComprehensiveServicesPage";
 import { BookingFormManagerPage } from "@/pages/BookingFormManagerPage";
 import { UsersPage } from "@/pages/UsersPage";
+import { TherapistsPage } from "@/pages/TherapistsPage";
 import { RolesPage } from "@/pages/RolesPage";
 import { NotificationsPage } from "@/pages/NotificationsPage";
 import { ActivityLogsPage } from "@/pages/ActivityLogsPage";
@@ -71,6 +72,7 @@ export function AppRoutes() {
           <Route path="/comprehensive-services-manager" element={<ComprehensiveServicesPage />} />
           <Route path="/booking-form" element={<BookingFormManagerPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/therapists" element={<TherapistsPage />} />
           <Route path="/user-types" element={<UserTypesPage />} />
           <Route path="/medical-reports" element={<MedicalReportsPage />} />
           <Route path="/roles" element={<RolesPage />} />
