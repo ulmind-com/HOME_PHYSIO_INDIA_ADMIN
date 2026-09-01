@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
-import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal } from "lucide-react";
+import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal, Eye, FileText } from "lucide-react";
 import { toast } from "sonner";
 import type { ListParams } from "@/types/api";
 import type { User } from "@/types/models";
@@ -79,14 +79,15 @@ export function TherapistsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [viewingDetails, setViewingDetails] = useState<User | null>(null);
 
   const params: ListParams = useMemo(
-    () => ({ page, page_size: pageSize, search: search || undefined }),
+    () => ({ page, page_size: pageSize, search: search || undefined, role: "therapist" }),
     [page, pageSize, search]
   );
 
   const { data, isLoading } = useQuery({
-    queryKey: ["users", "list", params],
+    queryKey: ["therapists", "list", params],
     queryFn: () => userService.list(params),
   });
   const { data: roles } = useQuery({
@@ -263,6 +264,9 @@ export function TherapistsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setViewingDetails(u)}>
+                            <Eye /> View Details
+                          </DropdownMenuItem>
                           {canUpdate && (
                             <DropdownMenuItem onClick={() => openEdit(u)}>
                               <Pencil /> Edit
@@ -391,6 +395,70 @@ export function TherapistsPage() {
         loading={remove.isPending}
         onConfirm={() => deleteTarget && remove.mutate(deleteTarget.id)}
       />
+      {/* Therapist Details Dialog */}
+      <Dialog open={!!viewingDetails} onOpenChange={(open) => !open && setViewingDetails(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Therapist Details</DialogTitle>
+            <DialogDescription>
+              Detailed view of therapist profile and documents.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {viewingDetails && (
+            <div className="space-y-6 py-4">
+              <div className="grid grid-cols-2 gap-6">
+                {/* Personal Info */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Personal Information</h4>
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <span className="font-medium text-muted-foreground">Name</span>
+                    <span className="col-span-2">{viewingDetails.name}</span>
+                    
+                    <span className="font-medium text-muted-foreground">Email</span>
+                    <span className="col-span-2">{viewingDetails.email}</span>
+                    
+                    <span className="font-medium text-muted-foreground">Phone</span>
+                    <span className="col-span-2">{viewingDetails.phone || "-"}</span>
+                    
+                    <span className="font-medium text-muted-foreground">Status</span>
+                    <span className="col-span-2">
+                      <StatusBadge status={viewingDetails.is_active ? "active" : "inactive"} />
+                    </span>
+                  </div>
+                </div>
+
+                {/* Professional Info */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Professional Profile</h4>
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <span className="font-medium text-muted-foreground">Specialization</span>
+                    <span className="col-span-2">Physiotherapy</span>
+                    
+                    <span className="font-medium text-muted-foreground">Experience</span>
+                    <span className="col-span-2">N/A</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-border pt-6">
+                <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Documents & Certifications</h4>
+                <div className="rounded-lg border border-dashed border-border bg-muted/20 p-8 text-center flex flex-col items-center justify-center">
+                  <FileText className="h-8 w-8 text-muted-foreground/50 mb-3" />
+                  <p className="text-sm font-medium">No documents uploaded</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Document management feature coming soon.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button onClick={() => setViewingDetails(null)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
