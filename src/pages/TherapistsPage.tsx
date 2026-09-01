@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet-async";
-import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal, Eye, FileText } from "lucide-react";
+import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal, Eye, FileText, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ListParams } from "@/types/api";
 import type { User } from "@/types/models";
@@ -171,6 +171,24 @@ export function TherapistsPage() {
       qc.invalidateQueries({ queryKey: ["therapists"] });
       toast.success("User deleted");
       setDeleteTarget(null);
+    },
+    onError: (err) => toast.error(normalizeError(err).message),
+  });
+
+  const verifyDocMut = useMutation({
+    mutationFn: (data: { userId: string; docId: string }) => userService.verifyDocument(data.userId, data.docId),
+    onSuccess: (res, variables) => {
+      qc.invalidateQueries({ queryKey: ["therapists"] });
+      toast.success("Document verification updated");
+      setViewingDetails((prev) => {
+        if (!prev || prev.id !== variables.userId) return prev;
+        return {
+          ...prev,
+          documents: prev.documents?.map((d) =>
+            d.id === variables.docId ? { ...d, is_verified: !d.is_verified } : d
+          ),
+        };
+      });
     },
     onError: (err) => toast.error(normalizeError(err).message),
   });
@@ -443,13 +461,54 @@ export function TherapistsPage() {
 
               <div className="border-t border-border pt-6">
                 <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Documents & Certifications</h4>
-                <div className="rounded-lg border border-dashed border-border bg-muted/20 p-8 text-center flex flex-col items-center justify-center">
-                  <FileText className="h-8 w-8 text-muted-foreground/50 mb-3" />
-                  <p className="text-sm font-medium">No documents uploaded</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Document management feature coming soon.
-                  </p>
-                </div>
+                {(!viewingDetails.documents || viewingDetails.documents.length === 0) ? (
+                  <div className="rounded-lg border border-dashed border-border bg-muted/20 p-8 text-center flex flex-col items-center justify-center">
+                    <FileText className="h-8 w-8 text-muted-foreground/50 mb-3" />
+                    <p className="text-sm font-medium">No documents uploaded</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3">
+                    {viewingDetails.documents.map((doc) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-muted/10">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <FileText className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="text-sm font-medium truncate" title={doc.title}>{doc.title}</h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-muted-foreground">{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                              {doc.is_verified ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                                  <CheckCircle2 className="h-3 w-3" /> Verified
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                                  Pending
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={doc.file.url} target="_blank" rel="noreferrer">
+                              <Eye className="h-4 w-4 mr-1.5" /> View
+                            </a>
+                          </Button>
+                          <Button
+                            variant={doc.is_verified ? "outline" : "default"}
+                            size="sm"
+                            onClick={() => verifyDocMut.mutate({ userId: viewingDetails.id, docId: doc.id })}
+                            disabled={verifyDocMut.isPending}
+                          >
+                            {doc.is_verified ? "Unverify" : "Verify"}
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

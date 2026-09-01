@@ -20,6 +20,8 @@ export const userService = {
   update: (id: string, data: Partial<User>) =>
     http.put<User>(`${endpoints.users.root}/${id}`, data),
   remove: (id: string) => http.del<null>(`${endpoints.users.root}/${id}`),
+  verifyDocument: (userId: string, docId: string) =>
+    http.patch<any>(`${endpoints.users.root}/${userId}/documents/${docId}/verify`),
 
   roles: () => http.get<Role[]>(endpoints.users.roles),
   createRole: (data: { name: string; description?: string; permissions: string[] }) =>

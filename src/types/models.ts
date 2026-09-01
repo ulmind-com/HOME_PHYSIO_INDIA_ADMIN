@@ -56,6 +56,15 @@ export type ApplicationStatus =
   | "hired";
 export type ContactStatus = "new" | "read" | "replied" | "closed";
 
+export interface TherapistDocument {
+  id: string;
+  title: string;
+  file: FileAsset;
+  is_verified: boolean;
+  uploaded_at: string;
+  verified_at?: string | null;
+}
+
 export interface User extends BaseDoc {
   name: string;
   email: string;
@@ -66,6 +75,7 @@ export interface User extends BaseDoc {
   is_active: boolean;
   is_superuser: boolean;
   last_login_at?: string | null;
+  documents?: TherapistDocument[];
 }
 
 export interface Role extends BaseDoc {
