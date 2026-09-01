@@ -149,7 +149,12 @@ export function UsersPage() {
           is_superuser: rest.is_superuser,
         });
       }
-      return userService.create(values as UserCreatePayload);
+      
+      const payload: Partial<UserForm> = { ...values };
+      if (!payload.password) {
+        delete payload.password;
+      }
+      return userService.create(payload as UserCreatePayload);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users"] });
