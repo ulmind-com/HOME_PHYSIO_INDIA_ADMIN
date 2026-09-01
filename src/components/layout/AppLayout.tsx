@@ -24,7 +24,6 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-background">
-      <LiveNotificationListener />
       {/* Desktop sidebar */}
       <aside
         className={cn(
