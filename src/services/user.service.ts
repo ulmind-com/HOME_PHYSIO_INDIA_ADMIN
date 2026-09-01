@@ -6,11 +6,12 @@ import type { Role, User } from "@/types/models";
 export interface UserCreatePayload {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   phone?: string;
   role: string;
   is_active: boolean;
   is_superuser: boolean;
+  send_credentials_email?: boolean;
 }
 
 export const userService = {

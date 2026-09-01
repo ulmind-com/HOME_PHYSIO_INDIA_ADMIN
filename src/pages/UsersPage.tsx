@@ -63,6 +63,7 @@ interface UserForm {
   role: string;
   is_active: boolean;
   is_superuser: boolean;
+  send_credentials_email: boolean;
 }
 
 export function UsersPage() {
@@ -102,6 +103,7 @@ export function UsersPage() {
       role: "admin",
       is_active: true,
       is_superuser: false,
+      send_credentials_email: true,
     },
   });
 
@@ -115,6 +117,7 @@ export function UsersPage() {
       role: "admin",
       is_active: true,
       is_superuser: false,
+      send_credentials_email: true,
     });
     setDialogOpen(true);
   };
@@ -129,6 +132,7 @@ export function UsersPage() {
       role: user.role,
       is_active: user.is_active,
       is_superuser: user.is_superuser,
+      send_credentials_email: false,
     });
     setDialogOpen(true);
   };
@@ -314,10 +318,26 @@ export function UsersPage() {
                 />
               </div>
               {!editing && (
-                <div className="space-y-1.5">
-                  <Label>Password</Label>
-                  <Input type="password" {...form.register("password", { required: !editing })} />
-                </div>
+                <>
+                  <div className="space-y-1.5">
+                    <Label>Password</Label>
+                    <Input 
+                      type="password" 
+                      placeholder="Leave blank to auto-generate" 
+                      {...form.register("password")} 
+                    />
+                  </div>
+                  <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium">Email Credentials</p>
+                      <p className="text-xs text-muted-foreground">Send an email with the login details</p>
+                    </div>
+                    <Switch
+                      checked={form.watch("send_credentials_email")}
+                      onCheckedChange={(v) => form.setValue("send_credentials_email", v)}
+                    />
+                  </label>
+                </>
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
