@@ -40,6 +40,7 @@ import { InfectionControlPage } from "@/pages/InfectionControlPage";
 import { InfectionControlEnquiriesPage } from "@/pages/InfectionControlEnquiriesPage";
 import { UserTypesPage } from "@/pages/UserTypesPage";
 import { MedicalReportsPage } from "@/pages/MedicalReportsPage";
+import { CommissionsPage } from "@/pages/commissions/CommissionsPage";
 import { NotFoundPage } from "@/pages/ErrorPages";
 
 export function AppRoutes() {
@@ -80,6 +81,7 @@ export function AppRoutes() {
           <Route path="/user-types" element={<UserTypesPage />} />
           <Route path="/medical-reports" element={<MedicalReportsPage />} />
           <Route path="/roles" element={<RolesPage />} />
+          <Route path="/commissions" element={<CommissionsPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/activity" element={<ActivityLogsPage />} />
           <Route path="/infection-control" element={<InfectionControlPage />} />

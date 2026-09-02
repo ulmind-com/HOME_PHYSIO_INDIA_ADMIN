@@ -56,6 +56,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "Comprehensive Bookings", to: "/comprehensive-bookings", icon: Sparkles, permission: "bookings:view" },
       { label: "Physio Requests", to: "/physio", icon: Activity, permission: "bookings:view" },
       { label: "Therapy Bookings", to: "/therapy-bookings", icon: Stethoscope, permission: "therapy_bookings:view" },
+      { label: "Commissions", to: "/commissions", icon: IndianRupee, permission: "commissions:view" },
       { label: "Pricing Settings", to: "/pricing-settings", icon: IndianRupee, permission: "settings:view" },
       { label: "Medical Reports", to: "/medical-reports", icon: ClipboardList, permission: "bookings:view" },
       { label: "Rental Requests", to: "/rentals", icon: ClipboardList, permission: "rentals:view" },

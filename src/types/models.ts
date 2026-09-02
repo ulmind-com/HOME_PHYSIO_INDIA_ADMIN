@@ -704,3 +704,37 @@ export interface MedicalReport extends BaseDoc {
   physio_notes: string;
   reviewed_by_id?: string | null;
 }
+
+export type EarningStatus = "pending" | "settled" | "reversed";
+
+export interface TherapistEarning extends BaseDoc {
+  therapist_id: string;
+  therapist_name: string;
+  booking_id: string;
+  booking_reference: string;
+  service_name: string;
+  amount: number;
+  status: EarningStatus;
+  payout_id?: string | null;
+  reversed_at?: string | null;
+  settled_at?: string | null;
+  admin_notes?: string | null;
+}
+
+export type PayoutStatus = "pending" | "paid" | "failed";
+
+export interface TherapistPayout extends BaseDoc {
+  therapist_id: string;
+  therapist_name: string;
+  period_start: string;
+  period_end: string;
+  total_amount: number;
+  earning_ids: string[];
+  status: PayoutStatus;
+  payment_method?: string | null;
+  transaction_reference?: string | null;
+  paid_at?: string | null;
+  admin_id: string;
+  admin_name: string;
+  admin_notes?: string | null;
+}

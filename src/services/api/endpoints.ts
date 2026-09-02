@@ -103,5 +103,13 @@ export const endpoints = {
     report: (id: string) => `/medical-reports/${id}`,
     review: (id: string) => `/medical-reports/${id}/review`,
   },
+  commissions: {
+    therapistSummaries: "/commissions/therapist-summaries",
+    earnings: "/commissions/earnings",
+    payouts: "/commissions/payouts",
+    createPayout: "/commissions/payouts",
+    markPaid: (id: string) => `/commissions/payouts/${id}/mark-paid`,
+    markFailed: (id: string) => `/commissions/payouts/${id}/mark-failed`,
+  },
   search: "/search",
 } as const;
