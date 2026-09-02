@@ -78,6 +78,7 @@ export interface User extends BaseDoc {
   last_login_at?: string | null;
   documents?: TherapistDocument[];
   age?: number | null;
+  gender?: string | null;
   pincode?: string | null;
   medical_condition?: string | null;
   specialization?: string | null;
@@ -156,6 +157,75 @@ export interface Booking extends BaseDoc {
   assigned_staff_name?: string | null;
   admin_notes?: string | null;
   message?: string | null;
+}
+
+export type ServiceCategory = "physiotherapy" | "yoga_therapy" | "massage_therapy" | "home_rehabilitation";
+export type FrequencyType = "daily" | "weekly" | "package";
+export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
+
+export interface TherapyBooking extends BaseDoc {
+  reference: string;
+  patient_id?: string | null;
+  patient_name: string;
+  patient_age?: number | null;
+  patient_gender?: string | null;
+  contact_phone: string;
+  contact_email?: string | null;
+  address: string;
+  city?: string | null;
+  pincode?: string | null;
+  service_category: ServiceCategory;
+  condition_notes?: string | null;
+  preferred_date: string;
+  shift: string;
+  time_slot: string;
+  session_duration_minutes: number;
+  frequency_type?: FrequencyType | null;
+  daily_visits_per_day?: number | null;
+  weekly_days_count?: number | null;
+  package_duration?: string | null;
+  package_custom_months?: number | null;
+  equipment: string[];
+  massage_type?: string | null;
+  massage_duration_minutes?: number | null;
+  visit_fee: number;
+  machine_charge: number;
+  total_amount: number;
+  platform_fee_percent: number;
+  platform_fee_amount: number;
+  therapist_payout: number;
+  payment_status: PaymentStatus;
+  razorpay_order_id?: string | null;
+  razorpay_payment_id?: string | null;
+  amount_paid: number;
+  cancellation_reason?: string | null;
+  cancelled_by?: string | null;
+  refund_amount: number;
+  razorpay_refund_id?: string | null;
+  refunded_at?: string | null;
+  status: BookingStatus;
+  assigned_staff_id?: string | null;
+  assigned_staff_name?: string | null;
+  admin_notes?: string | null;
+}
+
+export interface PricingSettings extends BaseDoc {
+  daily_visit_fee_1: number;
+  daily_visit_fee_2: number;
+  daily_visit_fee_3: number;
+  flat_visit_fee: number;
+  machine_charge_per_unit: number;
+  massage_normal_oil_fee: number;
+  massage_dry_fee: number;
+  massage_deep_tissue_fee: number;
+  massage_overtime_surcharge: number;
+  massage_standard_max_minutes: number;
+  platform_fee_physiotherapy_percent: number;
+  platform_fee_yoga_therapy_percent: number;
+  platform_fee_home_rehabilitation_percent: number;
+  platform_fee_massage_therapy_percent: number;
+  cancellation_full_refund_window_hours: number;
+  cancellation_late_refund_percent: number;
 }
 
 export interface Equipment extends BaseDoc {

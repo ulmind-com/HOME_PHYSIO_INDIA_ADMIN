@@ -77,6 +77,7 @@ interface UserForm {
   qualification: string;
   therapist_tier: string;
   experience_years: string;
+  gender: string;
 }
 
 export function TherapistsPage() {
@@ -136,6 +137,7 @@ export function TherapistsPage() {
       qualification: "",
       therapist_tier: "",
       experience_years: "",
+      gender: "",
     },
   });
 
@@ -154,6 +156,7 @@ export function TherapistsPage() {
       qualification: "",
       therapist_tier: "",
       experience_years: "",
+      gender: "",
     });
     setDialogOpen(true);
   };
@@ -173,6 +176,7 @@ export function TherapistsPage() {
       qualification: user.qualification ?? "",
       therapist_tier: user.therapist_tier ?? "",
       experience_years: user.experience_years != null ? String(user.experience_years) : "",
+      gender: user.gender ?? "",
     });
     setDialogOpen(true);
   };
@@ -191,6 +195,7 @@ export function TherapistsPage() {
           qualification: values.qualification || undefined,
           therapist_tier: values.therapist_tier || undefined,
           experience_years,
+          gender: values.gender || undefined,
         });
       }
 
@@ -203,6 +208,7 @@ export function TherapistsPage() {
         qualification: values.qualification || undefined,
         therapist_tier: values.therapist_tier || undefined,
         experience_years,
+        gender: values.gender || undefined,
       });
     },
     onSuccess: () => {
@@ -571,6 +577,24 @@ export function TherapistsPage() {
                   <Label>Experience (yrs)</Label>
                   <Input type="number" min={0} max={60} {...form.register("experience_years")} />
                 </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Gender</Label>
+                <p className="text-xs text-muted-foreground -mt-1 mb-1">Required to assign this therapist to Massage Therapy bookings (gender-matching safety policy).</p>
+                <Select
+                  value={form.watch("gender") || "__none__"}
+                  onValueChange={(v) => form.setValue("gender", v === "__none__" ? "" : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">Not set</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                 <span className="text-sm font-medium">Active account</span>

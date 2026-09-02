@@ -17,6 +17,7 @@ export interface UserCreatePayload {
   experience_years?: number;
   qualification?: string;
   therapist_tier?: string;
+  gender?: string;
 }
 
 export interface VerificationUpdatePayload {

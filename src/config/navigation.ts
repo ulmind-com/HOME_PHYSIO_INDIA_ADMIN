@@ -25,6 +25,7 @@ import {
   Layers,
   FileText,
   ShieldAlert,
+  IndianRupee,
   type LucideIcon,
 } from "lucide-react";
 
@@ -54,6 +55,8 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "Bookings", to: "/bookings", icon: CalendarCheck, permission: "bookings:view" },
       { label: "Comprehensive Bookings", to: "/comprehensive-bookings", icon: Sparkles, permission: "bookings:view" },
       { label: "Physio Requests", to: "/physio", icon: Activity, permission: "bookings:view" },
+      { label: "Therapy Bookings", to: "/therapy-bookings", icon: Stethoscope, permission: "therapy_bookings:view" },
+      { label: "Pricing Settings", to: "/pricing-settings", icon: IndianRupee, permission: "settings:view" },
       { label: "Medical Reports", to: "/medical-reports", icon: ClipboardList, permission: "bookings:view" },
       { label: "Rental Requests", to: "/rentals", icon: ClipboardList, permission: "rentals:view" },
       { label: "Job Applications", to: "/applications", icon: FileUser, permission: "applications:view" },

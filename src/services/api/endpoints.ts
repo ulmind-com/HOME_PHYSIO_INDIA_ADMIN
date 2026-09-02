@@ -41,6 +41,11 @@ export const endpoints = {
     cancel: (id: string) => `/bookings/${id}/cancel`,
     assign: (id: string) => `/bookings/${id}/assign`,
   },
+  therapyBookings: {
+    root: "/therapy-bookings",
+    status: (id: string) => `/therapy-bookings/${id}/status`,
+    assign: (id: string) => `/therapy-bookings/${id}/assign`,
+  },
   equipment: {
     root: "/equipment",
     categories: "/equipment/categories",
@@ -70,6 +75,7 @@ export const endpoints = {
     social: "/settings/social",
     seo: "/settings/seo",
     seoAll: "/settings/seo/all",
+    pricing: "/settings/pricing",
   },
   notifications: {
     root: "/notifications",

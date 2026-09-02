@@ -1,6 +1,6 @@
 import { endpoints } from "./api/endpoints";
 import { http } from "./api/http";
-import type { SEOSettings, SocialLinks, WebsiteSettings } from "@/types/models";
+import type { PricingSettings, SEOSettings, SocialLinks, WebsiteSettings } from "@/types/models";
 
 export const settingsService = {
   getWebsite: () => http.get<WebsiteSettings>(endpoints.settings.website),
@@ -14,4 +14,8 @@ export const settingsService = {
   listSeo: () => http.get<SEOSettings[]>(endpoints.settings.seoAll),
   upsertSeo: (data: Partial<SEOSettings> & { page_key: string }) =>
     http.put<SEOSettings>(endpoints.settings.seo, data),
+
+  getPricing: () => http.get<PricingSettings>(endpoints.settings.pricing),
+  updatePricing: (data: Partial<PricingSettings>) =>
+    http.put<PricingSettings>(endpoints.settings.pricing, data),
 };
