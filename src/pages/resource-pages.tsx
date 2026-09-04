@@ -5,6 +5,7 @@ import { equipmentConfig } from "@/config/resources/equipment.config";
 import { blogsConfig } from "@/config/resources/blogs.config";
 import { careersConfig } from "@/config/resources/careers.config";
 import { staffConfig } from "@/config/resources/staff.config";
+import { therapyEquipmentConfig } from "@/config/resources/therapy-equipment.config";
 import {
   faqsConfig,
   testimonialsConfig,
@@ -18,3 +19,4 @@ export const CareersPage = () => <ResourceView config={careersConfig} />;
 export const TestimonialsPage = () => <ResourceView config={testimonialsConfig} />;
 export const FaqPage = () => <ResourceView config={faqsConfig} />;
 export const StaffPage = () => <ResourceView config={staffConfig} />;
+export const TherapyEquipmentPage = () => <ResourceView config={therapyEquipmentConfig} />;

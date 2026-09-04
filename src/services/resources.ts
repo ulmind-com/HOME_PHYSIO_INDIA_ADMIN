@@ -7,6 +7,7 @@ import type {
   FAQ,
   Service,
   StaffMember,
+  TherapyEquipment,
   Testimonial,
   Video,
 } from "@/types/models";
@@ -23,4 +24,5 @@ export const resourceServices = {
   testimonials: createCrudService<Testimonial>(endpoints.testimonials.root),
   faqs: createCrudService<FAQ>(endpoints.faqs.root),
   staff: createCrudService<StaffMember>(endpoints.staff.root),
+  therapyEquipment: createCrudService<TherapyEquipment>("/therapy-equipment"),
 };

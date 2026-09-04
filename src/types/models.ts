@@ -209,6 +209,22 @@ export interface TherapyBooking extends BaseDoc {
   admin_notes?: string | null;
 }
 
+export interface TherapyEquipment extends BaseDoc {
+  name: string;
+  slug: string;
+  description: string;
+  /** Which service the equipment belongs to — drives what patients see. */
+  category: ServiceCategory;
+  /** Charge added to the booking total when a patient selects it. */
+  charge: number;
+  owner_type: "platform" | "therapist";
+  therapist_id?: string | null;
+  therapist_name?: string | null;
+  image?: ImageAsset | null;
+  is_active: boolean;
+  sort_order: number;
+}
+
 export interface PricingSettings extends BaseDoc {
   daily_visit_fee_1: number;
   daily_visit_fee_2: number;

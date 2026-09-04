@@ -12,6 +12,7 @@ import {
   TestimonialsPage,
   FaqPage,
   StaffPage,
+  TherapyEquipmentPage,
 } from "@/pages/resource-pages";
 import { VideosPage } from "@/pages/VideosPage";
 import { BookingsPage } from "@/pages/bookings/BookingsPage";
@@ -58,6 +59,7 @@ export function AppRoutes() {
           <Route path="/physio" element={<PhysioRequestsPage />} />
           <Route path="/therapy-bookings" element={<TherapyBookingsPage />} />
           <Route path="/pricing-settings" element={<PricingSettingsPage />} />
+          <Route path="/therapy-equipment" element={<TherapyEquipmentPage />} />
           <Route path="/equipment" element={<EquipmentPage />} />
           <Route path="/rentals" element={<RentalsPage />} />
           <Route path="/careers" element={<CareersPage />} />
