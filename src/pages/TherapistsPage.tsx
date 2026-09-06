@@ -78,6 +78,9 @@ interface UserForm {
   therapist_tier: string;
   experience_years: string;
   gender: string;
+  location_label: string;
+  lat: string;
+  lng: string;
 }
 
 export function TherapistsPage() {
@@ -138,6 +141,9 @@ export function TherapistsPage() {
       therapist_tier: "",
       experience_years: "",
       gender: "",
+      location_label: "",
+      lat: "",
+      lng: "",
     },
   });
 
@@ -157,6 +163,9 @@ export function TherapistsPage() {
       therapist_tier: "",
       experience_years: "",
       gender: "",
+      location_label: "",
+      lat: "",
+      lng: "",
     });
     setDialogOpen(true);
   };
@@ -177,6 +186,9 @@ export function TherapistsPage() {
       therapist_tier: user.therapist_tier ?? "",
       experience_years: user.experience_years != null ? String(user.experience_years) : "",
       gender: user.gender ?? "",
+      location_label: user.location_label ?? "",
+      lat: user.lat != null ? String(user.lat) : "",
+      lng: user.lng != null ? String(user.lng) : "",
     });
     setDialogOpen(true);
   };
@@ -184,6 +196,8 @@ export function TherapistsPage() {
   const save = useMutation({
     mutationFn: (values: UserForm) => {
       const experience_years = values.experience_years ? Number(values.experience_years) : undefined;
+      const lat = values.lat.trim() ? Number(values.lat) : undefined;
+      const lng = values.lng.trim() ? Number(values.lng) : undefined;
       if (editing) {
         return userService.update(editing.id, {
           name: values.name,
@@ -196,6 +210,9 @@ export function TherapistsPage() {
           therapist_tier: values.therapist_tier || undefined,
           experience_years,
           gender: values.gender || undefined,
+          location_label: values.location_label || undefined,
+          lat,
+          lng,
         });
       }
 
@@ -209,6 +226,9 @@ export function TherapistsPage() {
         therapist_tier: values.therapist_tier || undefined,
         experience_years,
         gender: values.gender || undefined,
+        location_label: values.location_label || undefined,
+        lat,
+        lng,
       });
     },
     onSuccess: () => {
@@ -596,6 +616,35 @@ export function TherapistsPage() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-1.5">
+                <Label>Service location</Label>
+                <p className="text-xs text-muted-foreground -mt-1 mb-1">
+                  Used to rank this therapist by distance when patients search nearby. Only
+                  the area name is ever shown to patients — never the coordinates.
+                </p>
+                <Input
+                  placeholder="Area name, e.g. Kolaghat, Purba Medinipur"
+                  {...form.register("location_label")}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    type="number"
+                    step="any"
+                    min={-90}
+                    max={90}
+                    placeholder="Latitude"
+                    {...form.register("lat")}
+                  />
+                  <Input
+                    type="number"
+                    step="any"
+                    min={-180}
+                    max={180}
+                    placeholder="Longitude"
+                    {...form.register("lng")}
+                  />
+                </div>
+              </div>
               <label className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
                 <span className="text-sm font-medium">Active account</span>
                 <Switch
@@ -719,6 +768,16 @@ export function TherapistsPage() {
                     <span className="font-medium text-muted-foreground">Experience</span>
                     <span className="col-span-2">
                       {viewingDetails.experience_years != null ? `${viewingDetails.experience_years} years` : "-"}
+                    </span>
+
+                    <span className="font-medium text-muted-foreground">Location</span>
+                    <span className="col-span-2">
+                      {viewingDetails.location_label || "-"}
+                      {viewingDetails.lat != null && viewingDetails.lng != null && (
+                        <span className="text-muted-foreground">
+                          {" "}({viewingDetails.lat.toFixed(4)}, {viewingDetails.lng.toFixed(4)})
+                        </span>
+                      )}
                     </span>
 
                     <span className="font-medium text-muted-foreground">Verification</span>

@@ -18,6 +18,9 @@ export interface UserCreatePayload {
   qualification?: string;
   therapist_tier?: string;
   gender?: string;
+  lat?: number;
+  lng?: number;
+  location_label?: string;
 }
 
 export interface VerificationUpdatePayload {

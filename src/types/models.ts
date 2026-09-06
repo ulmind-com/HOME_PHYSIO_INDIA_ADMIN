@@ -80,6 +80,9 @@ export interface User extends BaseDoc {
   age?: number | null;
   gender?: string | null;
   pincode?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  location_label?: string | null;
   medical_condition?: string | null;
   specialization?: string | null;
   experience_years?: number | null;
