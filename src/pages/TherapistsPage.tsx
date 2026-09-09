@@ -5,8 +5,9 @@ import { Helmet } from "react-helmet-async";
 import { Users as UsersIcon, Plus, Pencil, Trash2, MoreHorizontal, Eye, FileText, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ListParams } from "@/types/api";
-import type { User, UserType } from "@/types/models";
+import type { ImageAsset, User, UserType } from "@/types/models";
 import { userService, type UserCreatePayload } from "@/services/user.service";
+import { ImageUpload } from "@/components/common/ImageUpload";
 import { userTypesService } from "@/services/user-types.service";
 import { normalizeError } from "@/services/api/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -98,6 +99,7 @@ export function TherapistsPage() {
   const [verificationFilter, setVerificationFilter] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
+  const [avatar, setAvatar] = useState<ImageAsset | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
   const [viewingDetails, setViewingDetails] = useState<User | null>(null);
   const [rejectTarget, setRejectTarget] = useState<User | null>(null);
@@ -167,11 +169,13 @@ export function TherapistsPage() {
       lat: "",
       lng: "",
     });
+    setAvatar(null);
     setDialogOpen(true);
   };
 
   const openEdit = (user: User) => {
     setEditing(user);
+    setAvatar(user.avatar ?? null);
     form.reset({
       name: user.name,
       email: user.email,
@@ -211,6 +215,7 @@ export function TherapistsPage() {
           experience_years,
           gender: values.gender || undefined,
           location_label: values.location_label || undefined,
+          avatar: avatar ?? null,
           lat,
           lng,
         });
@@ -227,6 +232,7 @@ export function TherapistsPage() {
         experience_years,
         gender: values.gender || undefined,
         location_label: values.location_label || undefined,
+        avatar: avatar ?? undefined,
         lat,
         lng,
       });
@@ -497,6 +503,19 @@ export function TherapistsPage() {
             </DialogHeader>
 
             <div className="space-y-4 py-4">
+              <div className="space-y-1.5">
+                <Label>Profile photo</Label>
+                <ImageUpload
+                  value={avatar}
+                  onChange={setAvatar}
+                  aspect="portrait"
+                  folder="home-physio-india/therapists"
+                  className="mx-auto w-40"
+                />
+                <p className="text-center text-xs text-muted-foreground">
+                  Shown on the public therapists page. A clear head-and-shoulders portrait works best.
+                </p>
+              </div>
               <div className="space-y-1.5">
                 <Label>Full name</Label>
                 <Input {...form.register("name", { required: true })} />
