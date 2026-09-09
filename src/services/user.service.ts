@@ -1,7 +1,7 @@
 import { endpoints } from "./api/endpoints";
 import { http } from "./api/http";
 import type { ListParams } from "@/types/api";
-import type { Role, User } from "@/types/models";
+import type { ImageAsset, Role, User } from "@/types/models";
 
 export interface UserCreatePayload {
   name: string;
@@ -18,6 +18,7 @@ export interface UserCreatePayload {
   qualification?: string;
   therapist_tier?: string;
   gender?: string;
+  avatar?: ImageAsset | null;
   lat?: number;
   lng?: number;
   location_label?: string;
